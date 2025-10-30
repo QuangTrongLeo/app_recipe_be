@@ -11,23 +11,23 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @RequiredArgsConstructor
-public class AuthSecurity {
+public class CategorySecurity {
 
     @Value("${api.recipe.app.url}")
     private String apiRecipeAppUrl;
 
-    private final String endpoint = "auth";
+    private final String endpoint = "categories";
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChainAuth(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChainCategory(HttpSecurity http) throws Exception {
         return http
-                // chỉ match /recipe-app/api/v1/auth/**
+                // chỉ match /recipe-app/api/v1/categories/**
                 .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**")
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // toàn bộ /auth/** đều permit
+                        .anyRequest().permitAll() // toàn bộ /categories/** permit
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)

@@ -1,5 +1,6 @@
 package recipe_be.mb_gr03.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,22 +9,14 @@ import recipe_be.mb_gr03.dto.request.auth.RegisterRequest;
 import recipe_be.mb_gr03.dto.response.auth.TokenResponse;
 import recipe_be.mb_gr03.entity.User;
 import recipe_be.mb_gr03.mapper.auth.TokenMapper;
-import recipe_be.mb_gr03.repository.user.UserRepository;
 
 @Service
+@RequiredArgsConstructor
 public class AuthService {
-
-    @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JwtService jwtService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-
-    @Autowired
-    private TokenMapper tokenMapper;
+    private final UserService userService;
+    private final JwtService jwtService;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenMapper tokenMapper;
 
     // ===== ĐĂNG KÝ TÀI KHOẢN =====
     public void register(RegisterRequest request) {
