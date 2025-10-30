@@ -22,18 +22,17 @@ public class AuthSecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChainAuth(HttpSecurity http) throws Exception {
-        return http
-                // chỉ match /recipe-app/api/v1/auth/**
-                .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**")
+        http
+                .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**") // chỉ match /auth/**
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // toàn bộ /auth/** đều permit
+                        .anyRequest().permitAll() // toàn bộ /auth/** permit
                 )
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 }
-
