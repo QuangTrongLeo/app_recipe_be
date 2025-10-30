@@ -16,12 +16,11 @@ public class CategorySecurity {
     @Value("${api.recipe.app.url}")
     private String apiRecipeAppUrl;
 
-    private final String endpoint = "categories";
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChainCategory(HttpSecurity http) throws Exception {
+        String endpoint = "categories";
         http
                 .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**") // chỉ match /categories/**
                 .csrf(csrf -> csrf.disable())
