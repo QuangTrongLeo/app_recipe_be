@@ -16,12 +16,11 @@ public class AuthSecurity {
     @Value("${api.recipe.app.url}")
     private String apiRecipeAppUrl;
 
-    private final String endpoint = "auth";
-
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChainAuth(HttpSecurity http) throws Exception {
+        String endpoint = "auth";
         http
                 .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**") // chỉ match /auth/**
                 .csrf(csrf -> csrf.disable())

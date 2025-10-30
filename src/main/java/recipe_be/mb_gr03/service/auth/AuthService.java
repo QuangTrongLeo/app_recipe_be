@@ -25,7 +25,7 @@ public class AuthService {
 
     // ===== ĐĂNG NHẬP =====
     public TokenResponse login(LoginRequest request) {
-        User user = userService.findUserByEmail(request.getEmail());
+        User user = userService.getUserByEmail(request.getEmail());
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Sai mật khẩu!");
