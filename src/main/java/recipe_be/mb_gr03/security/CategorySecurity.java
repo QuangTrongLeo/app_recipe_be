@@ -22,9 +22,8 @@ public class CategorySecurity {
 
     @Bean
     public SecurityFilterChain securityFilterChainCategory(HttpSecurity http) throws Exception {
-        return http
-                // chỉ match /recipe-app/api/v1/categories/**
-                .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**")
+        http
+                .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**") // chỉ match /categories/**
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll() // toàn bộ /categories/** permit
@@ -32,8 +31,9 @@ public class CategorySecurity {
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
     }
 }
 
