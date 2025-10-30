@@ -7,6 +7,7 @@ import recipe_be.mb_gr03.dto.request.auth.RegisterRequest;
 import recipe_be.mb_gr03.entity.User;
 import recipe_be.mb_gr03.enums.EnumRole;
 import recipe_be.mb_gr03.repository.user.UserRepository;
+import recipe_be.mb_gr03.utils.DateTimeUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -30,7 +31,13 @@ public class UserService {
         userRepository.save(user);
     }
 
-    // ===== HÀM TẠO USER CHUẨN HÓA ===
+    // ===== Lấy User bằng email =====
+    protected User findUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Email không tồn tại!"));
+    }
+
+    // ===== Tạo User chuẩn hóa ===
     private User buildUser(RegisterRequest request) {
         return User.builder()
                 .email(request.getEmail())
@@ -39,7 +46,7 @@ public class UserService {
                 .avatar(null)
                 .bio(null)
                 .role(EnumRole.USER)
-                .createdAt(new Date())
+                .createdAt(DateTimeUtils.nowVietnamTime())
                 .favoriteRecipes(List.of())
                 .build();
     }

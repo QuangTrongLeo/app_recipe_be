@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import recipe_be.mb_gr03.dto.request.auth.LoginRequest;
 import recipe_be.mb_gr03.dto.request.auth.RegisterRequest;
+import recipe_be.mb_gr03.dto.response.auth.TokenResponse;
 import recipe_be.mb_gr03.service.auth.AuthService;
 
 @RestController
@@ -30,6 +32,17 @@ public class AuthController {
             // Các lỗi khác → trả về 500
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("Đăng ký thất bại: " + ex.getMessage());
+        }
+    }
+
+    // ===== LOGIN =====
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+        try {
+            return ResponseEntity.ok(authService.login(request));
+        } catch (Exception ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Đăng nhập thất bại: " + ex.getMessage());
         }
     }
 
