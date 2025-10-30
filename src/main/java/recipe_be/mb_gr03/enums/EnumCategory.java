@@ -1,5 +1,6 @@
 package recipe_be.mb_gr03.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
@@ -8,13 +9,14 @@ public enum EnumCategory {
     LUNCH("Lunch"),
     DINNER("Dinner");
 
-    private final String description;
+    private final String name;
 
-    EnumCategory(String description) {
-        this.description = description;
+    EnumCategory(String name) {
+        this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    @JsonValue
+    public String toValue() {
+        return name;
     }
 }
