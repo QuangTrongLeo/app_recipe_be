@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import recipe_be.mb_gr03.dto.response.ApiResp;
 import recipe_be.mb_gr03.dto.response.category.CategoryResponse;
 import recipe_be.mb_gr03.service.category.CategoryService;
 
@@ -17,7 +18,9 @@ public class CategoryController {
 
     // ===== ALL CATEGORY =====
     @GetMapping()
-    public ResponseEntity<List<CategoryResponse>> getAllCategories() {
-        return ResponseEntity.ok(categoryService.getAllCategories());
+    public ResponseEntity<ApiResp<List<CategoryResponse>>> getAllCategories() {
+        List<CategoryResponse> responses = categoryService.getAllCategories();
+        ApiResp<List<CategoryResponse>> apiResp = new ApiResp<>(HttpStatus.OK.value(), responses, "Danh sách Category");
+        return ResponseEntity.ok(apiResp);
     }
 }

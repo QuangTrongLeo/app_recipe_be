@@ -1,7 +1,6 @@
 package recipe_be.mb_gr03.controller.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import recipe_be.mb_gr03.dto.request.auth.LoginRequest;
 import recipe_be.mb_gr03.dto.request.auth.RegisterRequest;
+import recipe_be.mb_gr03.dto.response.ApiResp;
+import recipe_be.mb_gr03.dto.response.auth.TokenResponse;
 import recipe_be.mb_gr03.service.auth.AuthService;
 
 @RequiredArgsConstructor
@@ -20,29 +21,32 @@ public class AuthController {
 
     // ===== REGISTER =====
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResp<String>> register(@RequestBody RegisterRequest request) {
         try {
             authService.register(request);
-            return ResponseEntity.ok("Tạo tài khoản thành công!");
+            ApiResp<String> apiResp = new ApiResp<>(HttpStatus.OK.value(), null, "Tạo tài khoản thành công!");
+            return ResponseEntity.ok(apiResp);
         } catch (IllegalArgumentException ex) {
-            // Email đã tồn tại hoặc request không hợp lệ
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+            ApiResp<String> apiResp = new ApiResp<>(HttpStatus.BAD_REQUEST.value(), null, ex.getMessage());
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResp);
         } catch (Exception ex) {
-            // Các lỗi khác → trả về 500
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Đăng ký thất bại: " + ex.getMessage());
+            ApiResp<String> apiResp = new ApiResp<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), null,
+                    "Đăng ký thất bại: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResp);
         }
     }
 
     // ===== LOGIN =====
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResp<TokenResponse>> login(@RequestBody LoginRequest request) {
         try {
-            return ResponseEntity.ok(authService.login(request));
+            TokenResponse token = authService.login(request);
+            ApiResp<TokenResponse> resp = new ApiResp<>(HttpStatus.OK.value(), token, "Đăng nhập thành công!");
+            return ResponseEntity.ok(resp);
         } catch (Exception ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("Đăng nhập thất bại: " + ex.getMessage());
+            ApiResp<TokenResponse> resp = new ApiResp<>(HttpStatus.UNAUTHORIZED.value(), null,
+                    "Đăng nhập thất bại: " + ex.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(resp);
         }
     }
-
 }
