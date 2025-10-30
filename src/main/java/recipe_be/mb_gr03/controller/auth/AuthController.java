@@ -1,5 +1,6 @@
 package recipe_be.mb_gr03.controller.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,15 +10,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import recipe_be.mb_gr03.dto.request.auth.LoginRequest;
 import recipe_be.mb_gr03.dto.request.auth.RegisterRequest;
-import recipe_be.mb_gr03.dto.response.auth.TokenResponse;
 import recipe_be.mb_gr03.service.auth.AuthService;
 
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.recipe.app.url}/auth")
 public class AuthController {
-
-    @Autowired
-    private AuthService authService;
+    private final AuthService authService;
 
     // ===== REGISTER =====
     @PostMapping("/register")

@@ -1,5 +1,6 @@
 package recipe_be.mb_gr03.service.auth;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -8,18 +9,13 @@ import recipe_be.mb_gr03.entity.User;
 import recipe_be.mb_gr03.enums.EnumRole;
 import recipe_be.mb_gr03.repository.user.UserRepository;
 import recipe_be.mb_gr03.utils.DateTimeUtils;
-
-import java.util.Date;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
-
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     // ===== TẠO TÀI KHOẢN ===
     public void createUser(RegisterRequest request) {
