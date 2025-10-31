@@ -34,6 +34,6 @@ public class AuthService {
         String accessToken = jwtService.generateAccessToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
-        return tokenMapper.toTokenResponse(accessToken, refreshToken);
+        return tokenMapper.toTokenResponse(user.getId(), accessToken, refreshToken);
     }
 }
