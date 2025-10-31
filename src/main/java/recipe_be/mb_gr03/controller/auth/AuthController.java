@@ -21,16 +21,23 @@ public class AuthController {
 
     // ===== REGISTER =====
     @PostMapping("/register")
-    public ResponseEntity<ApiResp<String>> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ApiResp<Boolean>> register(@RequestBody RegisterRequest request) {
         try {
-            authService.register(request);
-            ApiResp<String> apiResp = new ApiResp<>(HttpStatus.OK.value(), null, "Tạo tài khoản thành công!");
-            return ResponseEntity.ok(apiResp);
+            boolean success = authService.register(request);
+
+            if (success) {
+                ApiResp<Boolean> apiResp = new ApiResp<>(HttpStatus.OK.value(), true, "Tạo tài khoản thành công!");
+                return ResponseEntity.ok(apiResp);
+            } else {
+                ApiResp<Boolean> apiResp = new ApiResp<>(HttpStatus.BAD_REQUEST.value(), false, "Tạo tài khoản thất bại!");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResp);
+            }
+
         } catch (IllegalArgumentException ex) {
-            ApiResp<String> apiResp = new ApiResp<>(HttpStatus.BAD_REQUEST.value(), null, ex.getMessage());
+            ApiResp<Boolean> apiResp = new ApiResp<>(HttpStatus.BAD_REQUEST.value(), false, ex.getMessage());
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(apiResp);
         } catch (Exception ex) {
-            ApiResp<String> apiResp = new ApiResp<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), null,
+            ApiResp<Boolean> apiResp = new ApiResp<>(HttpStatus.INTERNAL_SERVER_ERROR.value(), false,
                     "Đăng ký thất bại: " + ex.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(apiResp);
         }
