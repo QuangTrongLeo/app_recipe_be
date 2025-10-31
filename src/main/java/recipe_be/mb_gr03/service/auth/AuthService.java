@@ -19,8 +19,9 @@ public class AuthService {
     private final TokenMapper tokenMapper;
 
     // ===== ĐĂNG KÝ TÀI KHOẢN =====
-    public void register(RegisterRequest request) {
+    public boolean register(RegisterRequest request) {
         userService.createUser(request);
+        return true;
     }
 
     // ===== ĐĂNG NHẬP =====
