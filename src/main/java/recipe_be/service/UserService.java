@@ -65,6 +65,12 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
 
+    // ===== THÔNG TIN NGƯỜI DÙNG ĐANG ĐĂNG NHẬP =====
+    public UserResponse getUserByEmail(){
+        String email = CurrentUserUtils.getEmail();
+        return userMapper.toUserResponse(getUserByEmail(email));
+    }
+
     // ===== Lấy User bằng email =====
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)

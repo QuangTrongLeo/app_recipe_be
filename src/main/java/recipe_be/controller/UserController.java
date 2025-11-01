@@ -19,4 +19,10 @@ public class UserController {
         UserResponse updatedUser = userService.updateProfileByEmail(request);
         return APIResponse.builder(updatedUser).build();
     }
+
+    @GetMapping("/profile")
+    public APIResponse getProfile() {
+        UserResponse user = userService.getUserByEmail();
+        return APIResponse.builder(user).build();
+    }
 }

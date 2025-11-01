@@ -21,12 +21,12 @@ public class CategoryController {
     @PostMapping()
     public APIResponse createCategory(@RequestBody CategoryRequest request) {
         CategoryResponse response = categoryMapper.toCategoryResponse(categoryService.create(request));
-        return  APIResponse.builder(response).build();
+        return APIResponse.builder(response).build();
     }
     
     @GetMapping()
     public APIResponse getAllCategories() {
         List<CategoryResponse> response = categoryService.getAllCategories();
-        return  APIResponse.builder(response).build();
+        return APIResponse.builder(response).build();
     }
 }

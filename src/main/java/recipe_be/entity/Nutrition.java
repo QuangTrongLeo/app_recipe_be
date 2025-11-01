@@ -16,7 +16,6 @@ public class Nutrition {
     @Id
     private String id;
     private String name;
-    private String icon;
     private String unit;
     private String type;
 }

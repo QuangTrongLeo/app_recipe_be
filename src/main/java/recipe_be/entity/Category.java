@@ -12,5 +12,4 @@ import recipe_be.enums.Status;
 @Document(collection = "categories")
 public class Category extends BaseEntity{
     private String name;
-    
 }

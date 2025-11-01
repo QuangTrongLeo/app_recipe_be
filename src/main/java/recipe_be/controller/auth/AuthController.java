@@ -28,6 +28,6 @@ public class AuthController {
     @PostMapping("/login")
     public APIResponse login(@RequestBody LoginRequest request) {
         TokenResponse token = authService.login(request);
-        return  APIResponse.builder(token).build();
+        return APIResponse.builder(token).build();
     }
 }
