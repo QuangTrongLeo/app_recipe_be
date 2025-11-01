@@ -23,6 +23,18 @@ public class CategoryController {
         CategoryResponse response = categoryMapper.toCategoryResponse(categoryService.createCategory(request));
         return APIResponse.builder(response).build();
     }
+
+    @PutMapping("/{id}")
+    public APIResponse updateCategory(@PathVariable String id, @RequestBody CategoryRequest request) {
+        CategoryResponse response = categoryMapper.toCategoryResponse(categoryService.updateCategory(id, request));
+        return APIResponse.builder(response).build();
+    }
+
+    @DeleteMapping("/{id}")
+    public APIResponse deleteCategory(@PathVariable String id) {
+        categoryService.deleteCategory(id);
+        return APIResponse.builder("Xóa category thành công!").build();
+    }
     
     @GetMapping()
     public APIResponse getAllCategories() {
