@@ -1,17 +1,19 @@
 package recipe_be.config;
 
-import org.springframework.core.convert.converter.Converter;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import recipe_be.entity.*;
 import recipe_be.enums.NutritionType;
-
 import java.util.Arrays;
 
 @Configuration
-public class MongoInitConfig extends AbstractMongoClientConfiguration {
+public class MongoInitConfig {
 
     @Value("${account.admin.email}")
     private String emailAdmin;
@@ -22,14 +24,22 @@ public class MongoInitConfig extends AbstractMongoClientConfiguration {
     @Value("${account.admin.username}")
     private String usernameAdmin;
 
-    @Override
-    protected String getDatabaseName() {
-        return "recipe"; // đổi tên DB của bạn
+    @Value("${spring.data.mongodb.uri}")
+    private String mongoUri;
+
+    @Bean
+    public MongoClient mongoClient() {
+        return MongoClients.create(mongoUri);
     }
 
-    @Override
+    @Bean
+    public MongoTemplate mongoTemplate() {
+        return new MongoTemplate(mongoClient(), "recipe");
+    }
+
+    @Bean
     public MongoCustomConversions customConversions() {
-        Converter<String, NutritionType> stringToEnum = new Converter<String, NutritionType>() {
+        Converter<String, NutritionType> stringToEnum = new Converter<>() {
             @Override
             public NutritionType convert(String source) {
                 if (source == null) return null;
@@ -41,7 +51,7 @@ public class MongoInitConfig extends AbstractMongoClientConfiguration {
             }
         };
 
-        Converter<NutritionType, String> enumToString = new Converter<NutritionType, String>() {
+        Converter<NutritionType, String> enumToString = new Converter<>() {
             @Override
             public String convert(NutritionType source) {
                 return source == null ? null : source.name();
@@ -50,7 +60,6 @@ public class MongoInitConfig extends AbstractMongoClientConfiguration {
 
         return new MongoCustomConversions(Arrays.asList(stringToEnum, enumToString));
     }
-
 
 //    @Bean
 //    public ApplicationRunner initMongoCollections(MongoTemplate mongoTemplate, PasswordEncoder passwordEncoder) {

@@ -10,7 +10,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
-    @Mapping(source = "role", target = "role")
     UserResponse toUserResponse(User user);
     List<UserResponse> toUserResponseList(List<User> users);
 }
