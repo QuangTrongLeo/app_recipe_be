@@ -21,25 +21,25 @@ public class UserSecurity {
     @Bean
     public SecurityFilterChain securityFilterChainUser(HttpSecurity http) throws Exception {
         String endpoint = "users";
+        String fullEndpoint = apiRecipeAppUrl + "/" + endpoint + "/**";
         http
-                .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**") // match /users/**
+                .securityMatcher(fullEndpoint) // chỉ áp dụng cho /users/**
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        // GET, PUT, POST cho USER hoặc ADMIN
-                        .requestMatchers(HttpMethod.GET, apiRecipeAppUrl + "/" + endpoint + "/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.PUT, apiRecipeAppUrl + "/" + endpoint + "/**").hasAnyRole("USER", "ADMIN")
-                        .requestMatchers(HttpMethod.POST, apiRecipeAppUrl + "/" + endpoint + "/**").hasAnyRole("USER", "ADMIN")
-                        // DELETE chỉ ADMIN
-                        .requestMatchers(HttpMethod.DELETE, apiRecipeAppUrl + "/" + endpoint + "/**").hasRole("ADMIN")
-                        // các request khác yêu cầu authentication
+                        // Cho phép USER & ADMIN thực hiện GET, PUT, POST
+                        .requestMatchers(HttpMethod.GET, fullEndpoint).hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.PUT, fullEndpoint).hasAnyRole("USER", "ADMIN")
+                        .requestMatchers(HttpMethod.POST, fullEndpoint).hasAnyRole("USER", "ADMIN")
+                        // Chỉ ADMIN được phép DELETE
+                        .requestMatchers(HttpMethod.DELETE, fullEndpoint).hasRole("ADMIN")
+                        // Các request khác yêu cầu xác thực
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
-
 }

@@ -21,8 +21,9 @@ public class AuthSecurity {
     @Bean
     public SecurityFilterChain securityFilterChainAuth(HttpSecurity http) throws Exception {
         String endpoint = "auth";
+        String fullEndpoint = apiRecipeAppUrl + "/" + endpoint + "/**";
         http
-                .securityMatcher(apiRecipeAppUrl + "/" + endpoint + "/**") // chỉ match /auth/**
+                .securityMatcher(fullEndpoint) // chỉ match /auth/**
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .anyRequest().permitAll() // toàn bộ /auth/** permit

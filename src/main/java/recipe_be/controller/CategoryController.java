@@ -20,7 +20,7 @@ public class CategoryController {
     
     @PostMapping()
     public APIResponse createCategory(@RequestBody CategoryRequest request) {
-        CategoryResponse response = categoryMapper.toCategoryResponse(categoryService.create(request));
+        CategoryResponse response = categoryMapper.toCategoryResponse(categoryService.createCategory(request));
         return APIResponse.builder(response).build();
     }
     
