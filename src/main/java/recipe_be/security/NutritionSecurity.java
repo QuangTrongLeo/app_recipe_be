@@ -12,16 +12,15 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @RequiredArgsConstructor
-public class CategorySecurity {
-
+public class NutritionSecurity {
     @Value("${api.recipe.app.url}")
     private String apiRecipeAppUrl;
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
-    public SecurityFilterChain securityFilterChainCategory(HttpSecurity http) throws Exception {
-        String endpoint = "categories";
+    public SecurityFilterChain securityFilterChainNutrition(HttpSecurity http) throws Exception {
+        String endpoint = "nutrition";
         String fullEndpoint = apiRecipeAppUrl + "/" + endpoint + "/**";
         http
                 .securityMatcher(fullEndpoint)
@@ -43,4 +42,3 @@ public class CategorySecurity {
         return http.build();
     }
 }
-

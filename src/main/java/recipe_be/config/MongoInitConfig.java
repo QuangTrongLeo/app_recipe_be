@@ -1,20 +1,17 @@
 package recipe_be.config;
 
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
+import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import recipe_be.entity.*;
-import recipe_be.enums.Role;
-import recipe_be.utils.DateTimeUtils;
+import recipe_be.enums.NutritionType;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
-public class MongoInitConfig {
+public class MongoInitConfig extends AbstractMongoClientConfiguration {
 
     @Value("${account.admin.email}")
     private String emailAdmin;
@@ -24,6 +21,36 @@ public class MongoInitConfig {
 
     @Value("${account.admin.username}")
     private String usernameAdmin;
+
+    @Override
+    protected String getDatabaseName() {
+        return "recipe"; // đổi tên DB của bạn
+    }
+
+    @Override
+    public MongoCustomConversions customConversions() {
+        Converter<String, NutritionType> stringToEnum = new Converter<String, NutritionType>() {
+            @Override
+            public NutritionType convert(String source) {
+                if (source == null) return null;
+                try {
+                    return NutritionType.valueOf(source.trim().toUpperCase());
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        };
+
+        Converter<NutritionType, String> enumToString = new Converter<NutritionType, String>() {
+            @Override
+            public String convert(NutritionType source) {
+                return source == null ? null : source.name();
+            }
+        };
+
+        return new MongoCustomConversions(Arrays.asList(stringToEnum, enumToString));
+    }
+
 
 //    @Bean
 //    public ApplicationRunner initMongoCollections(MongoTemplate mongoTemplate, PasswordEncoder passwordEncoder) {

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import recipe_be.enums.NutritionType;
 
 @Data
 @Builder
@@ -17,5 +18,5 @@ public class Nutrition {
     private String id;
     private String name;
     private String unit;
-    private String type;
+    private NutritionType type;
 }
