@@ -6,9 +6,11 @@ import org.springframework.util.StringUtils;
 import recipe_be.dto.request.NutritionRequest;
 import recipe_be.dto.response.NutritionResponse;
 import recipe_be.entity.Nutrition;
+import recipe_be.enums.NutritionType;
 import recipe_be.mapper.NutritionMapper;
 import recipe_be.repository.NutritionRepository;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -68,5 +70,21 @@ public class NutritionService {
     public Nutrition getById(String id){
         return nutritionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nutrition với id: " + id));
+    }
+
+    // ===== DANH SÁCH NUTRITIONS TYPE =====
+    public List<String> getAllNutritionTypes() {
+        return Arrays.stream(NutritionType.values())
+                .map(Enum::name)
+                .toList();
+    }
+
+    // ===== LẤY NUTRITION TYPE BẰNG TÊN ===
+    public NutritionType getNutritionTypeByName(String typeName) {
+        try {
+            return NutritionType.valueOf(typeName.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new RuntimeException("Không tìm thấy NutritionType: " + typeName);
+        }
     }
 }

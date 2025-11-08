@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import recipe_be.dto.request.NutritionRequest;
 import recipe_be.dto.response.APIResponse;
 import recipe_be.dto.response.NutritionResponse;
+import recipe_be.enums.NutritionType;
 import recipe_be.service.NutritionService;
 
 import java.util.List;
@@ -43,5 +44,17 @@ public class NutritionController {
     public APIResponse getNutritionById(@PathVariable String id) {
         NutritionResponse response = nutritionService.getNutritionById(id);
         return APIResponse.builder(response).build();
+    }
+
+    @GetMapping("/type")
+    public APIResponse getAllNutritionType() {
+        List<String> types = nutritionService.getAllNutritionTypes();
+        return APIResponse.builder(types).build();
+    }
+
+    @GetMapping("/type/{typeName}")
+    public APIResponse getNutritionTypeByName(@PathVariable String typeName) {
+        NutritionType type = nutritionService.getNutritionTypeByName(typeName);
+        return APIResponse.builder(type).build();
     }
 }
