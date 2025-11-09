@@ -19,5 +19,5 @@ public class Ingredient {
     private String image;
     private String unit;
     private double price;
-    private int stock;
+    private double stock;
 }
