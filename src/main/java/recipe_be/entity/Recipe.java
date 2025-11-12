@@ -14,7 +14,8 @@ import java.util.List;
 public class Recipe {
     @Id
     private String id;
-    private Category category;
+    private String userId;
+    private String categoryId;
     private String name;
     private String description;
     private String image;
@@ -29,7 +30,7 @@ public class Recipe {
     @NoArgsConstructor
     public static class IngredientItem {
         private String ingredientId;
-        private int quantity;
+        private double quantity;
     }
 
     @Data

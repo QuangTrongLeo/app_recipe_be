@@ -36,7 +36,7 @@ public class IngredientService {
             ingredient.setImage(image.getUrl());
         }
 
-        return ingredientMapper.toNutritionIngredient(ingredientRepository.save(ingredient));
+        return ingredientMapper.toIngredientResponse(ingredientRepository.save(ingredient));
     }
 
     //  ===== CẬP NHẬT NGUYÊN LIỆU =====
@@ -69,20 +69,20 @@ public class IngredientService {
 
         // Lưu và trả về response
         Ingredient saved = ingredientRepository.save(ingredient);
-        return ingredientMapper.toNutritionIngredient(saved);
+        return ingredientMapper.toIngredientResponse(saved);
     }
 
 
     //  ===== LẤY NGUYÊN LIỆU BẰNG ID =====
     public IngredientResponse getIngredientById(String id) {
         Ingredient ingredient = getById(id);
-        return ingredientMapper.toNutritionIngredient(ingredient);
+        return ingredientMapper.toIngredientResponse(ingredient);
     }
 
     //  ===== LẤY TẤT CẢ NGUYÊN LIỆU =====
     public List<IngredientResponse> getAllIngredients() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
-        return ingredientMapper.toNutritionIngredientList(ingredients);
+        return ingredientMapper.toIngredientRponseList(ingredients);
     }
 
     //  ===== XÓA NGUYÊN LIỆU =====
