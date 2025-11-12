@@ -36,18 +36,25 @@ public class ImageService {
     // ==== XÓA ẢNH BẰNG ID =====
     public void deleteById(String id) {
         Image image = getById(id);
+
         try {
-            // Lấy public_id từ URL (Cloudinary)
-            // URL ví dụ: https://res.cloudinary.com/demo/image/upload/v1731234567/abc123.jpg
-            String publicId = image.getUrl().substring(
-                    image.getUrl().lastIndexOf("/") + 1,
-                    image.getUrl().lastIndexOf(".")
-            );
+            String url = image.getUrl();
+            if (url != null && url.contains("/")) {
+                // Cắt public_id nếu URL đúng định dạng Cloudinary
+                int start = url.lastIndexOf("/") + 1;
+                int end = url.lastIndexOf(".");
+                String publicId;
 
-            // Xóa ảnh khỏi Cloudinary
-            cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                if (end > start) {
+                    publicId = url.substring(start, end);
+                    // Xóa ảnh trên Cloudinary
+                    cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+                } else {
+                    System.out.println("URL không có đuôi file, bỏ qua xóa Cloudinary: " + url);
+                }
+            }
 
-            // Xóa bản ghi trong MongoDB
+            // Dù sao cũng xóa trong MongoDB
             imageRepository.delete(image);
         } catch (Exception e) {
             throw new RuntimeException("Xóa ảnh thất bại: " + e.getMessage());
