@@ -12,9 +12,6 @@ import recipe_be.mapper.CategoryMapper;
 import recipe_be.mapper.IngredientMapper;
 import recipe_be.mapper.NutritionMapper;
 import recipe_be.mapper.RecipeMapper;
-import recipe_be.repository.CategoryRepository;
-import recipe_be.repository.IngredientRepository;
-import recipe_be.repository.NutritionRepository;
 import recipe_be.repository.RecipeRepository;
 import recipe_be.utils.CurrentUserUtils;
 
@@ -109,6 +106,13 @@ public class RecipeService {
     // ===== LẤY TẤT CẢ =====
     public List<RecipeResponse> getAllRecipes() {
         return recipeRepository.findAll().stream()
+                .map(this::enrichRecipe)
+                .toList();
+    }
+
+    // ===== LẤY TẤT CẢ CÔNG THỨC THEO CATEGORY =====
+    public List<RecipeResponse> getAllRecipesByCategoryId(String categoryId) {
+        return recipeRepository.findByCategoryId(categoryId).stream()
                 .map(this::enrichRecipe)
                 .toList();
     }

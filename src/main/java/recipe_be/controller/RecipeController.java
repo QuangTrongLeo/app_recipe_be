@@ -42,6 +42,12 @@ public class RecipeController {
         return APIResponse.builder(response).build();
     }
 
+    @GetMapping("/category/{categoryId}")
+    public APIResponse getAllRecipesByCategoryId(@PathVariable String categoryId) {
+        List<RecipeResponse> response = recipeService.getAllRecipesByCategoryId(categoryId);
+        return APIResponse.builder(response).build();
+    }
+
     @GetMapping("/me")
     public APIResponse getMyRecipes() {
         List<RecipeResponse> response = recipeService.getMyRecipes();
