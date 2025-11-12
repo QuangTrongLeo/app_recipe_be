@@ -30,7 +30,7 @@ public class CategoryService {
 
     // ===== CẬP NHẬT DANH MỤC =====
     public Category updateCategory(String id, CategoryRequest request) {
-        Category category = findCategoryById(id);
+        Category category = getById(id);
         category.setName(request.getName());
         category.setUpdatedAt(System.currentTimeMillis());
         return categoryRepository.save(category);
@@ -38,11 +38,11 @@ public class CategoryService {
 
     // ===== XÓA DANH MỤC =====
     public void deleteCategory(String id) {
-        Category category = findCategoryById(id);
+        Category category = getById(id);
         categoryRepository.delete(category);
     }
     
-    public Category findCategoryById(String id) {
+    public Category getById(String id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy category có id: " + id));
     }

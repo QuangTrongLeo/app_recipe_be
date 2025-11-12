@@ -97,7 +97,7 @@ public class IngredientService {
     }
 
     // Lấy nguyên liệu bằng ID
-    private Ingredient getById(String id) {
+    public Ingredient getById(String id) {
         return ingredientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nguyên liệu"));
     }

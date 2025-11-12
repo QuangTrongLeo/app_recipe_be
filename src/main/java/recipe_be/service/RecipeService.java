@@ -23,11 +23,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class RecipeService {
-
     private final RecipeRepository recipeRepository;
-    private final CategoryRepository categoryRepository;
-    private final IngredientRepository ingredientRepository;
-    private final NutritionRepository nutritionRepository;
 
     private final RecipeMapper recipeMapper;
     private final CategoryMapper categoryMapper;
@@ -36,6 +32,9 @@ public class RecipeService {
 
     private final ImageService imageService;
     private final UserService userService;
+    private final CategoryService categoryService;
+    private final IngredientService ingredientService;
+    private final NutritionService nutritionService;
 
     // ===== TẠO CÔNG THỨC =====
     public RecipeResponse createRecipe(RecipeRequest request) {
@@ -139,13 +138,13 @@ public class RecipeService {
         RecipeResponse response = recipeMapper.toRecipeResponse(recipe);
 
         // Category
-        Category category = categoryRepository.findById(recipe.getCategoryId()).orElse(null);
+        Category category = categoryService.getById(recipe.getCategoryId());
         response.setCategory(categoryMapper.toCategoryResponse(category));
 
         // Ingredients
         if (recipe.getIngredients() != null) {
             response.setIngredients(recipe.getIngredients().stream().map(i -> {
-                Ingredient ing = ingredientRepository.findById(i.getIngredientId()).orElse(null);
+                Ingredient ing = ingredientService.getById(i.getIngredientId());
                 return new RecipeResponse.IngredientItemResponse(
                         ingredientMapper.toIngredientResponse(ing),
                         i.getQuantity()
@@ -156,7 +155,7 @@ public class RecipeService {
         // Nutritions
         if (recipe.getNutritions() != null) {
             response.setNutritions(recipe.getNutritions().stream().map(n -> {
-                Nutrition nut = nutritionRepository.findById(n.getNutritionId()).orElse(null);
+                Nutrition nut = nutritionService.getById(n.getNutritionId());
                 return new RecipeResponse.NutritionItemResponse(
                         nutritionMapper.toNutritionResponse(nut),
                         n.getValue()
