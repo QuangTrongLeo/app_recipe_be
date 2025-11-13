@@ -36,7 +36,7 @@ public class IngredientService {
             ingredient.setImage(image.getUrl());
         }
 
-        return ingredientMapper.toIngredientResponse(ingredientRepository.save(ingredient));
+        return ingredientMapper.toIngredientResponse(save(ingredient));
     }
 
     //  ===== CẬP NHẬT NGUYÊN LIỆU =====
@@ -68,7 +68,7 @@ public class IngredientService {
         }
 
         // Lưu và trả về response
-        Ingredient saved = ingredientRepository.save(ingredient);
+        Ingredient saved = save(ingredient);
         return ingredientMapper.toIngredientResponse(saved);
     }
 
@@ -100,5 +100,9 @@ public class IngredientService {
     public Ingredient getById(String id) {
         return ingredientRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy nguyên liệu"));
+    }
+
+    public Ingredient save(Ingredient ingredient) {
+        return ingredientRepository.save(ingredient);
     }
 }

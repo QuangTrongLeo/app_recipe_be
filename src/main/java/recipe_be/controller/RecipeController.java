@@ -59,4 +59,22 @@ public class RecipeController {
         RecipeResponse response = recipeService.getRecipeById(id);
         return APIResponse.builder(response).build();
     }
+
+    @PostMapping("/{id}/favorite")
+    public APIResponse addFavoriteRecipe(@PathVariable String id) {
+        recipeService.addFavoriteRecipe(id);
+        return APIResponse.builder("Đã thêm vào danh sách yêu thích").build();
+    }
+
+    @DeleteMapping("/{id}/favorite")
+    public APIResponse removeFavoriteRecipe(@PathVariable String id) {
+        recipeService.removeFavoriteRecipe(id);
+        return APIResponse.builder("Đã xóa khỏi danh sách yêu thích").build();
+    }
+
+    @GetMapping("/favorites")
+    public APIResponse getMyFavoriteRecipes() {
+        List<RecipeResponse> response = recipeService.getMyFavoriteRecipes();
+        return APIResponse.builder(response).build();
+    }
 }

@@ -27,7 +27,7 @@ public class NutritionService {
                 .unit(request.getUnit())
                 .type(request.getType())
                 .build();
-        return nutritionMapper.toNutritionResponse(nutritionRepository.save(nutrition));
+        return nutritionMapper.toNutritionResponse(save(nutrition));
     }
 
     // ===== CẬP NHẬT NUTRITION =====
@@ -44,7 +44,7 @@ public class NutritionService {
             existing.setType(request.getType());
         }
 
-        return nutritionMapper.toNutritionResponse(nutritionRepository.save(existing));
+        return nutritionMapper.toNutritionResponse(save(existing));
     }
 
     // ===== XÓA NUTRITION =====
@@ -66,12 +66,6 @@ public class NutritionService {
         return nutritionMapper.toNutritionResponse(nutrition);
     }
 
-    // ===== Lấy Nutrition bằng ID =====
-    public Nutrition getById(String id){
-        return nutritionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nutrition với id: " + id));
-    }
-
     // ===== DANH SÁCH NUTRITIONS TYPE =====
     public List<String> getAllNutritionTypes() {
         return Arrays.stream(NutritionType.values())
@@ -86,5 +80,15 @@ public class NutritionService {
         } catch (IllegalArgumentException e) {
             throw new RuntimeException("Không tìm thấy NutritionType: " + typeName);
         }
+    }
+
+    // ===== Lấy Nutrition bằng ID =====
+    public Nutrition getById(String id){
+        return nutritionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy nutrition với id: " + id));
+    }
+
+    public Nutrition save(Nutrition nutrition) {
+        return nutritionRepository.save(nutrition);
     }
 }

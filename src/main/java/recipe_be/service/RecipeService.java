@@ -15,7 +15,9 @@ import recipe_be.mapper.RecipeMapper;
 import recipe_be.repository.RecipeRepository;
 import recipe_be.utils.CurrentUserUtils;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +57,7 @@ public class RecipeService {
             recipe.setImage(image.getUrl());
         }
 
-        return enrichRecipe(recipeRepository.save(recipe));
+        return enrichRecipe(save(recipe));
     }
 
     // ===== CẬP NHẬT CÔNG THỨC =====
@@ -86,7 +88,7 @@ public class RecipeService {
             recipe.setImage(newImage.getUrl());
         }
 
-        return enrichRecipe(recipeRepository.save(recipe));
+        return enrichRecipe(save(recipe));
     }
 
     // ===== XÓA CÔNG THỨC =====
@@ -101,6 +103,59 @@ public class RecipeService {
             imageService.deleteByUrl(recipe.getImage());
         }
         recipeRepository.deleteById(id);
+    }
+
+    // ===== THÊM CÔNG THỨC VÀO DANH SÁCH YÊU THÍCH CỦA NGƯỜI DÙNG HIỆN TẠI =====
+    public void addFavoriteRecipe(String recipeId) {
+        String email = CurrentUserUtils.getEmail();
+        User user = userService.getUserByEmail(email);
+
+        if (user.getFavoriteRecipes() == null) {
+            user.setFavoriteRecipes(new ArrayList<>());
+        }
+
+        // Kiểm tra xem đã tồn tại chưa
+        boolean exists = user.getFavoriteRecipes().stream().anyMatch(fav -> fav.getRecipeId().equals(recipeId));
+
+        if (exists) {
+            throw new RuntimeException("Công thức này đã có trong danh sách yêu thích.");
+        }
+
+        user.getFavoriteRecipes().add(new User.FavoriteRecipe(recipeId));
+        userService.save(user);
+    }
+
+    // ===== XÓA CÔNG THỨC RA KHỎI DANH SÁCH YÊU THÍCH CỦA NGƯỜI DÙNG HIỆN TẠI =====
+    public void removeFavoriteRecipe(String recipeId) {
+        String email = CurrentUserUtils.getEmail();
+        User user = userService.getUserByEmail(email);
+
+        if (user.getFavoriteRecipes() == null || user.getFavoriteRecipes().isEmpty()) {
+            throw new RuntimeException("Danh sách yêu thích đang trống.");
+        }
+
+        boolean removed = user.getFavoriteRecipes().removeIf(fav -> fav.getRecipeId().equals(recipeId));
+
+        if (!removed) {
+            throw new RuntimeException("Công thức không tồn tại trong danh sách yêu thích.");
+        }
+
+        userService.save(user);
+    }
+
+    // ===== DANH SÁCH TẤT CẢ CÔNG THỨC YÊU THÍCH CỦA NGƯỜI DÙNG HIỊN TẠI =====
+    public List<RecipeResponse> getMyFavoriteRecipes() {
+        String email = CurrentUserUtils.getEmail();
+        User user = userService.getUserByEmail(email);
+
+        if (user.getFavoriteRecipes() == null) return List.of();
+
+        return user.getFavoriteRecipes().stream()
+                .map(fav -> recipeRepository.findById(fav.getRecipeId())
+                        .map(this::enrichRecipe)
+                        .orElse(null))
+                .filter(Objects::nonNull)
+                .toList();
     }
 
     // ===== LẤY TẤT CẢ =====
@@ -132,9 +187,13 @@ public class RecipeService {
         return enrichRecipe(recipe);
     }
 
-    private Recipe getById(String id) {
+    public Recipe getById(String id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy công thức."));
+    }
+
+    public Recipe save(Recipe recipe) {
+        return recipeRepository.save(recipe);
     }
 
     // ===== HÀM HỖ TRỢ GẮN CATEGORY / INGREDIENT / NUTRITION =====

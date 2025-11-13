@@ -32,7 +32,7 @@ public class UserService {
         }
 
         User user = buildUser(request);
-        userRepository.save(user);
+        save(user);
     }
 
     // ===== CẬP NHẬT PROFILE =====
@@ -75,6 +75,10 @@ public class UserService {
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
+    }
+
+    public void save(User user) {
+        userRepository.save(user);
     }
 
     // ===== Tạo User chuẩn hóa ===
