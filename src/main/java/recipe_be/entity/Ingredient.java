@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
@@ -12,11 +13,10 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "ingredients")
-public class Ingredient {
-    @Id
-    private String id;
+public class Ingredient extends BaseEntity {
     private String name;
-    private String image;
+    @DBRef
+    private Image image;
     private String unit;
     private double price;
     private double stock;

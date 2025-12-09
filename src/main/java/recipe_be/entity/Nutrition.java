@@ -13,9 +13,8 @@ import recipe_be.enums.NutritionType;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "nutrition")
-public class Nutrition {
-    @Id
-    private String id;
+public class Nutrition extends BaseEntity{
+    
     private String name;
     private String unit;
     private NutritionType type;

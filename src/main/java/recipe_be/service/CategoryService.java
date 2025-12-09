@@ -22,6 +22,9 @@ public class CategoryService {
 
     // ===== TẠO DANH MỤC =====
     public Category createCategory(CategoryRequest request) {
+        if (request.getName() == null || request.getName().isEmpty()) {
+            throw new RuntimeException("Invalid category name");
+        }
         Category category = new Category();
         category.setName(request.getName());
         category.setStatus(Status.ACTIVE);
