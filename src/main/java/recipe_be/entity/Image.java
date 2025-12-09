@@ -12,8 +12,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "images")
-public class Image {
-    @Id
-    private String id;
+public class Image extends BaseEntity{
     private String url;
 }

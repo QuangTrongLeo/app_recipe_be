@@ -1,6 +1,7 @@
 package recipe_be.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,21 +22,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
     private final ImageService imageService;
     private final UserMapper userMapper;
 
-    // ===== TẠO TÀI KHOẢN ===
     public void createUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Tài khoản này đã tồn tại!");
         }
-
         User user = buildUser(request);
         save(user);
     }
-
-    // ===== CẬP NHẬT PROFILE =====
+    
     public UserResponse updateProfileByEmail(UpdateProfileRequest request) {
         String email = CurrentUserUtils.getEmail();
         User user = getUserByEmail(email);
@@ -64,14 +61,12 @@ public class UserService {
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
     }
-
-    // ===== THÔNG TIN NGƯỜI DÙNG ĐANG ĐĂNG NHẬP =====
+    
     public UserResponse getUserByEmail(){
         String email = CurrentUserUtils.getEmail();
         return userMapper.toUserResponse(getUserByEmail(email));
     }
-
-    // ===== Lấy User bằng email =====
+    
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
@@ -80,9 +75,9 @@ public class UserService {
     public void save(User user) {
         userRepository.save(user);
     }
-
-    // ===== Tạo User chuẩn hóa ===
+    
     private User buildUser(RegisterRequest request) {
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         return User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))

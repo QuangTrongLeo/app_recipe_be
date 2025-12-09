@@ -1,8 +1,6 @@
 package recipe_be.controller.auth;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -10,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import recipe_be.dto.request.auth.LoginRequest;
 import recipe_be.dto.request.auth.RegisterRequest;
 import recipe_be.dto.response.APIResponse;
-import recipe_be.dto.response.auth.TokenResponse;
+import recipe_be.dto.response.auth.AuthenticationResponse;
 import recipe_be.service.auth.AuthService;
 
 @RequiredArgsConstructor
@@ -27,7 +25,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public APIResponse login(@RequestBody LoginRequest request) {
-        TokenResponse token = authService.login(request);
+        AuthenticationResponse token = authService.login(request);
         return APIResponse.builder(token).build();
     }
 }

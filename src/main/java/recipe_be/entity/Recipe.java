@@ -11,9 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "recipes")
-public class Recipe {
-    @Id
-    private String id;
+public class Recipe extends BaseEntity {
+    
     private String userId;
     private String categoryId;
     private String name;

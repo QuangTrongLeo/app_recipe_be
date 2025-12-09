@@ -13,9 +13,8 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "payments")
-public class Payment {
-    @Id
-    private String id;
+public class Payment extends BaseEntity {
+    
     private String orderId;
     private String userId;
     private double amount;
