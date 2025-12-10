@@ -2,6 +2,8 @@ package recipe_be.dto.request;
 
 import lombok.Data;
 import org.springframework.web.multipart.MultipartFile;
+import recipe_be.entity.IngredientItem;
+import recipe_be.entity.NutritionItem;
 import recipe_be.entity.Recipe;
 
 import java.util.List;
@@ -14,6 +16,6 @@ public class RecipeRequest {
     private String instructions;
     private int time;
     private MultipartFile image;
-    private List<Recipe.IngredientItem> ingredients;
-    private List<Recipe.NutritionItem> nutritions;
+    private List<IngredientItem> ingredients; // Thêm
+    private List<NutritionItem> nutritions;  // Thêm
 }

@@ -120,7 +120,7 @@ public class RecipeService {
             throw new RuntimeException("Công thức này đã có trong danh sách yêu thích.");
         }
 
-        user.getFavoriteRecipes().add(new User.FavoriteRecipe(recipeId));
+        user.getFavoriteRecipes().add(new FavoriteRecipe(recipeId));
         userService.save(user);
     }
 

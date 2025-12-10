@@ -12,7 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @Document(collection = "recipes")
 public class Recipe extends BaseEntity {
-    
     private String userId;
     private String categoryId;
     private String name;
@@ -23,20 +22,4 @@ public class Recipe extends BaseEntity {
 
     private List<IngredientItem> ingredients;
     private List<NutritionItem> nutritions;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class IngredientItem {
-        private String ingredientId;
-        private double quantity;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class NutritionItem {
-        private String nutritionId;
-        private double value;
-    }
 }

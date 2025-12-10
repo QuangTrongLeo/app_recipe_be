@@ -30,11 +30,4 @@ public class User {
     private Date createdAt;
 
     private List<FavoriteRecipe> favoriteRecipes;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class FavoriteRecipe {
-        private String recipeId;
-    }
 }
