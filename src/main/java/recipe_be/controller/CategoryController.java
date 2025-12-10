@@ -2,6 +2,7 @@ package recipe_be.controller;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import recipe_be.dto.request.CategoryRequest;
 import recipe_be.dto.response.APIResponse;
@@ -26,7 +27,7 @@ public class CategoryController {
     public APIResponse updateCategory(@PathVariable String id, @RequestBody CategoryRequest request) {
         return APIResponse.builder(categoryService.updateCategory(id, request)).build();
     }
-
+    
     @DeleteMapping("/{id}")
     public APIResponse deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);

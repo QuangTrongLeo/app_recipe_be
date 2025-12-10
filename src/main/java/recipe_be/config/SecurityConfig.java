@@ -32,50 +32,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        String AUTH = API_PREFIX + "/auth";
-        String CATEGORIES = API_PREFIX + "/categories";
-        String INGREDIENTS = API_PREFIX + "/ingredients";
-        String NUTRITION = API_PREFIX + "/nutrition";
-        String RECIPES = API_PREFIX + "/recipes";
-        String USERS = API_PREFIX + "/users";
-
+        final String[] PUBLIC_URL = {
+                API_PREFIX + "/auth/login",
+                API_PREFIX + "/auth/register",
+        };
         http.csrf(AbstractHttpConfigurer::disable);
 
         http.authorizeHttpRequests(auth -> auth
-                // 1. AUTH
-                .requestMatchers(HttpMethod.POST, AUTH + "/**").permitAll()
-
-                // 2. CATEGORIES (user: GET, admin: CRUD)
-                .requestMatchers(HttpMethod.GET, CATEGORIES + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.POST, CATEGORIES + "/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.PUT, CATEGORIES + "/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, CATEGORIES + "/**").hasAuthority("ADMIN")
-
-                // 3. INGREDIENTS (user: GET, admin: CRUD)
-                .requestMatchers(HttpMethod.GET, INGREDIENTS + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.POST, INGREDIENTS + "/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.PUT, INGREDIENTS + "/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, INGREDIENTS + "/**").hasAuthority("ADMIN")
-
-                // 4. NUTRITION (user: GET, admin: CRUD)
-                .requestMatchers(HttpMethod.GET, NUTRITION + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.POST, NUTRITION + "/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.PUT, NUTRITION + "/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, NUTRITION + "/**").hasAuthority("ADMIN")
-
-                // 5. RECIPES (user và admin: CRUD)
-                .requestMatchers(HttpMethod.GET, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.POST, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.DELETE, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
-
-                // 6. USERS (user: GET PUT, admin: CRUD)
-                .requestMatchers(HttpMethod.GET, USERS + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.PUT, USERS + "/**").hasAnyAuthority("USER", "ADMIN")
-                .requestMatchers(HttpMethod.POST, USERS + "/**").hasAuthority("ADMIN")
-                .requestMatchers(HttpMethod.DELETE, USERS + "/**").hasAuthority("ADMIN")
-
-                // 7. Mặc định: phải login
+                .requestMatchers( PUBLIC_URL).permitAll()
                 .anyRequest().authenticated()
         );
 
