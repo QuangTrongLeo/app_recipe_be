@@ -34,8 +34,8 @@ public class UserService {
     }
     
     public UserResponse updateProfileByEmail(UpdateProfileRequest request) {
-        String email = CurrentUserUtils.getEmail();
-        User user = getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = getUserById(userId);
 
         if (StringUtils.hasText(request.getUsername())) {
             user.setUsername(request.getUsername());
@@ -62,15 +62,20 @@ public class UserService {
         return userMapper.toUserResponse(savedUser);
     }
     
-    public UserResponse getUserByEmail(){
-        String email = CurrentUserUtils.getEmail();
-        return userMapper.toUserResponse(getUserByEmail(email));
+    public UserResponse getUserById(){
+        String userId = CurrentUserUtils.getUserId();
+        return userMapper.toUserResponse(getUserById(userId));
     }
-    
+
+    public User getUserById(String userId){
+        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User không tồn tại!"));
+    }
+
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
     }
+
 
     public void save(User user) {
         userRepository.save(user);

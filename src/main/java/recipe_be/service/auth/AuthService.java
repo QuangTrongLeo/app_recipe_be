@@ -35,14 +35,14 @@ public class AuthService {
         return true;
     }
     
-    public AuthenticationResponse login(LoginRequest LoginRequest) {
-        User user = userService.getUserByEmail(LoginRequest.getEmail());
+    public AuthenticationResponse login(LoginRequest request) {
+        User user = userService.getUserByEmail(request.getEmail());
         if (user == null) {
             throw new RuntimeException("Authentication failed");
         }
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        if (!passwordEncoder.matches(LoginRequest.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new RuntimeException("Authentication failed");
         }
 

@@ -37,8 +37,8 @@ public class RecipeService {
 
     // ===== TẠO CÔNG THỨC =====
     public RecipeResponse createRecipe(RecipeRequest request) {
-        String email = CurrentUserUtils.getEmail();
-        User user = userService.getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = userService.getUserById(userId);
 
         Recipe recipe = Recipe.builder()
                 .userId(user.getId())
@@ -63,9 +63,8 @@ public class RecipeService {
     // ===== CẬP NHẬT CÔNG THỨC =====
     public RecipeResponse updateRecipe(String id, RecipeRequest request) {
         Recipe recipe = getById(id);
-
-        String email = CurrentUserUtils.getEmail();
-        User user = userService.getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = userService.getUserById(userId);
 
         if (!recipe.getUserId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
             throw new RuntimeException("Bạn không có quyền chỉnh sửa công thức này");
@@ -94,8 +93,8 @@ public class RecipeService {
     // ===== XÓA CÔNG THỨC =====
     public void deleteRecipe(String id) {
         Recipe recipe = getById(id);
-        String email = CurrentUserUtils.getEmail();
-        User user = userService.getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = userService.getUserById(userId);
         if (!recipe.getUserId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
             throw new RuntimeException("Bạn không có quyền xóa công thức này");
         }
@@ -107,8 +106,8 @@ public class RecipeService {
 
     // ===== THÊM CÔNG THỨC VÀO DANH SÁCH YÊU THÍCH CỦA NGƯỜI DÙNG HIỆN TẠI =====
     public void addFavoriteRecipe(String recipeId) {
-        String email = CurrentUserUtils.getEmail();
-        User user = userService.getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = userService.getUserById(userId);
 
         if (user.getFavoriteRecipes() == null) {
             user.setFavoriteRecipes(new ArrayList<>());
@@ -127,8 +126,8 @@ public class RecipeService {
 
     // ===== XÓA CÔNG THỨC RA KHỎI DANH SÁCH YÊU THÍCH CỦA NGƯỜI DÙNG HIỆN TẠI =====
     public void removeFavoriteRecipe(String recipeId) {
-        String email = CurrentUserUtils.getEmail();
-        User user = userService.getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = userService.getUserById(userId);
 
         if (user.getFavoriteRecipes() == null || user.getFavoriteRecipes().isEmpty()) {
             throw new RuntimeException("Danh sách yêu thích đang trống.");
@@ -145,8 +144,8 @@ public class RecipeService {
 
     // ===== DANH SÁCH TẤT CẢ CÔNG THỨC YÊU THÍCH CỦA NGƯỜI DÙNG HIỊN TẠI =====
     public List<RecipeResponse> getMyFavoriteRecipes() {
-        String email = CurrentUserUtils.getEmail();
-        User user = userService.getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = userService.getUserById(userId);
 
         if (user.getFavoriteRecipes() == null) return List.of();
 
@@ -174,8 +173,8 @@ public class RecipeService {
 
     // ===== LẤY THEO NGƯỜI DÙNG =====
     public List<RecipeResponse> getMyRecipes() {
-        String email = CurrentUserUtils.getEmail();
-        User user = userService.getUserByEmail(email);
+        String userId = CurrentUserUtils.getUserId();
+        User user = userService.getUserById(userId);
         return recipeRepository.findByUserId(user.getId()).stream()
                 .map(this::enrichRecipe)
                 .toList();

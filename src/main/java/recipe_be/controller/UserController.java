@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("/profile")
     public APIResponse getProfile() {
-        UserResponse user = userService.getUserByEmail();
+        UserResponse user = userService.getUserById();
         return APIResponse.builder(user).build();
     }
 }
