@@ -19,7 +19,7 @@ public class Payment extends BaseEntity {
     private String userId;
     private double amount;
     private PaymentMethod paymentMethod;
-    private Status status;
+//    private Status status;
     private String transactionId;
     private Date paidAt;
 }

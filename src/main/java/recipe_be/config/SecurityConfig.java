@@ -20,65 +20,90 @@ import javax.crypto.spec.SecretKeySpec;
 @Configuration
 @EnableMethodSecurity
 public class SecurityConfig {
-    
-    private final String API_PREFIX ="/recipe-app/api/v1";
-    
-    private final String[] PUBLIC_URLS = {
-            API_PREFIX + "/auth/login",
-            API_PREFIX + "/auth/register"
-    };
 
-    private final String[] ADMIN_RESOURCES = {
-            API_PREFIX + "/categories",
-    };
+    @Value("${api.recipe.app.url}")
+    private String API_PREFIX;
 
     @Value("${app.jwt.secret}")
     private String signerKey;
 
     @Autowired
     private CustomJwtDecoder jwtDecoder;
-    
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        String AUTH = API_PREFIX + "/auth";
+        String CATEGORIES = API_PREFIX + "/categories";
+        String INGREDIENTS = API_PREFIX + "/ingredients";
+        String NUTRITION = API_PREFIX + "/nutrition";
+        String RECIPES = API_PREFIX + "/recipes";
+        String USERS = API_PREFIX + "/users";
 
-        httpSecurity.authorizeHttpRequests(request ->{
-            request
-                    .requestMatchers(HttpMethod.POST, PUBLIC_URLS).permitAll()
-                    .requestMatchers(HttpMethod.POST, ADMIN_RESOURCES).hasAuthority("ADMIN")
-                    .requestMatchers(HttpMethod.DELETE, ADMIN_RESOURCES).hasAuthority("ADMIN")
-                    .requestMatchers(HttpMethod.PUT, ADMIN_RESOURCES).hasAuthority("ADMIN")
-                    .anyRequest().authenticated();
-        });
-        httpSecurity.logout(logout ->{
-            logout.disable();
-        });
+        http.csrf(AbstractHttpConfigurer::disable);
 
-        httpSecurity.oauth2ResourceServer(oauth2 ->{
-            oauth2.jwt(jwtConfigurer  -> jwtConfigurer.decoder( jwtDecoder)
-                    .jwtAuthenticationConverter(jwtAuthenticationConverter()
-                    ));
-        });
-        return httpSecurity.build();
+        http.authorizeHttpRequests(auth -> auth
+                // 1. AUTH
+                .requestMatchers(HttpMethod.POST, AUTH + "/**").permitAll()
+
+                // 2. CATEGORIES (user: GET, admin: CRUD)
+                .requestMatchers(HttpMethod.GET, CATEGORIES + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, CATEGORIES + "/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, CATEGORIES + "/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, CATEGORIES + "/**").hasAuthority("ADMIN")
+
+                // 3. INGREDIENTS (user: GET, admin: CRUD)
+                .requestMatchers(HttpMethod.GET, INGREDIENTS + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, INGREDIENTS + "/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, INGREDIENTS + "/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, INGREDIENTS + "/**").hasAuthority("ADMIN")
+
+                // 4. NUTRITION (user: GET, admin: CRUD)
+                .requestMatchers(HttpMethod.GET, NUTRITION + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, NUTRITION + "/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.PUT, NUTRITION + "/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, NUTRITION + "/**").hasAuthority("ADMIN")
+
+                // 5. RECIPES (user và admin: CRUD)
+                .requestMatchers(HttpMethod.GET, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.DELETE, RECIPES + "/**").hasAnyAuthority("USER", "ADMIN")
+
+                // 6. USERS (user: GET PUT, admin: CRUD)
+                .requestMatchers(HttpMethod.GET, USERS + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.PUT, USERS + "/**").hasAnyAuthority("USER", "ADMIN")
+                .requestMatchers(HttpMethod.POST, USERS + "/**").hasAuthority("ADMIN")
+                .requestMatchers(HttpMethod.DELETE, USERS + "/**").hasAuthority("ADMIN")
+
+                // 7. Mặc định: phải login
+                .anyRequest().authenticated()
+        );
+
+        http.logout(l -> l.disable());
+
+        http.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt ->
+                jwt.decoder(jwtDecoder).jwtAuthenticationConverter(jwtAuthenticationConverter())
+        ));
+
+        return http.build();
     }
-    
+
     @Bean
     public JwtDecoder jwtDecoder() {
-
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HmacSHA256");
+        SecretKeySpec secretKey = new SecretKeySpec(signerKey.getBytes(), "HmacSHA256");
         return NimbusJwtDecoder
-                .withSecretKey( secretKeySpec )
+                .withSecretKey(secretKey)
                 .macAlgorithm(MacAlgorithm.HS512)
                 .build();
     }
-    
-    JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
-        
-        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
+    private JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter granted = new JwtGrantedAuthoritiesConverter();
+        granted.setAuthorityPrefix("");
+
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(granted);
         return converter;
     }
 }
+

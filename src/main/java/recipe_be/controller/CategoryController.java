@@ -16,18 +16,15 @@ import java.util.List;
 @RequestMapping("${api.recipe.app.url}/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    private final CategoryMapper categoryMapper;
     
     @PostMapping()
     public APIResponse createCategory(@RequestBody CategoryRequest request) {
-        CategoryResponse response = categoryMapper.toCategoryResponse(categoryService.createCategory(request));
-        return APIResponse.builder(response).build();
+        return APIResponse.builder(categoryService.createCategory(request)).build();
     }
 
     @PutMapping("/{id}")
     public APIResponse updateCategory(@PathVariable String id, @RequestBody CategoryRequest request) {
-        CategoryResponse response = categoryMapper.toCategoryResponse(categoryService.updateCategory(id, request));
-        return APIResponse.builder(response).build();
+        return APIResponse.builder(categoryService.updateCategory(id, request)).build();
     }
 
     @DeleteMapping("/{id}")

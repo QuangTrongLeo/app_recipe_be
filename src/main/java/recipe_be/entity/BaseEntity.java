@@ -13,5 +13,4 @@ public class BaseEntity {
     private Status status;
     private Long createdAt;
     private Long updatedAt;
-    
 }

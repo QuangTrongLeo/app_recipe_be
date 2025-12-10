@@ -21,22 +21,23 @@ public class CategoryService {
     private final CategoryMapper categoryMapper;
 
     // ===== TẠO DANH MỤC =====
-    public Category createCategory(CategoryRequest request) {
+    public CategoryResponse createCategory(CategoryRequest request) {
         if (request.getName() == null || request.getName().isEmpty()) {
             throw new RuntimeException("Invalid category name");
         }
         Category category = new Category();
         category.setName(request.getName());
         category.setStatus(Status.ACTIVE);
-        return categoryRepository.save(category);
+
+        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
     // ===== CẬP NHẬT DANH MỤC =====
-    public Category updateCategory(String id, CategoryRequest request) {
+    public CategoryResponse updateCategory(String id, CategoryRequest request) {
         Category category = getById(id);
         category.setName(request.getName());
         category.setUpdatedAt(System.currentTimeMillis());
-        return categoryRepository.save(category);
+        return categoryMapper.toCategoryResponse(categoryRepository.save(category));
     }
 
     // ===== XÓA DANH MỤC =====

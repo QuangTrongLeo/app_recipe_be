@@ -33,7 +33,7 @@ public class IngredientService {
         MultipartFile imageFile = request.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
             Image image = imageService.uploadAndSave(imageFile);
-            ingredient.setImage(image.getUrl());
+            ingredient.setImage(image);
         }
 
         return ingredientMapper.toIngredientResponse(save(ingredient));
@@ -60,11 +60,13 @@ public class IngredientService {
 
         MultipartFile imageFile = request.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
-            if (StringUtils.hasText(ingredient.getImage())) {
-                imageService.deleteByUrl(ingredient.getImage());
+            // ----- Xóa ảnh cũ -----
+            if (ingredient.getImage() != null && ingredient.getImage().getUrl() != null) {
+                imageService.deleteByUrl(ingredient.getImage().getUrl());
             }
-            Image image = imageService.uploadAndSave(imageFile);
-            ingredient.setImage(image.getUrl());
+            // ----- Upload ảnh mới -----
+            Image newImage = imageService.uploadAndSave(imageFile);
+            ingredient.setImage(newImage);
         }
 
         // Lưu và trả về response
@@ -89,8 +91,8 @@ public class IngredientService {
     public void deleteIngredient(String id) {
         Ingredient ingredient = getById(id);
 
-        if (ingredient.getImage() != null) {
-            imageService.deleteByUrl(ingredient.getImage());
+        if (ingredient.getImage() != null && ingredient.getImage().getUrl() != null) {
+            imageService.deleteByUrl(ingredient.getImage().getUrl());
         }
 
         ingredientRepository.deleteById(id);
