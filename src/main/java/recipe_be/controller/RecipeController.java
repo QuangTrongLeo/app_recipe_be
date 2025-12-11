@@ -1,6 +1,7 @@
 package recipe_be.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import recipe_be.dto.request.RecipeRequest;
 import recipe_be.dto.response.APIResponse;
@@ -14,15 +15,16 @@ import java.util.List;
 @RestController
 @RequestMapping("${api.recipe.app.url}/recipes")
 public class RecipeController {
-
     private final RecipeService recipeService;
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping
     public APIResponse createRecipe(@ModelAttribute RecipeRequest request) {
         RecipeResponse response = recipeService.createRecipe(request);
         return APIResponse.builder(response).build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PutMapping("/{id}")
     public APIResponse updateRecipe(@PathVariable String id,
                                     @ModelAttribute RecipeRequest request) {
@@ -30,48 +32,56 @@ public class RecipeController {
         return APIResponse.builder(response).build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping("/{id}")
     public APIResponse deleteRecipe(@PathVariable String id) {
         recipeService.deleteRecipe(id);
         return APIResponse.builder("Xóa công thức thành công").build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
     public APIResponse getAllRecipes() {
         List<RecipeResponse> response = recipeService.getAllRecipes();
         return APIResponse.builder(response).build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{categoryId}/category")
     public APIResponse getAllRecipesByCategoryId(@PathVariable String categoryId) {
         List<RecipeResponse> response = recipeService.getAllRecipesByCategoryId(categoryId);
         return APIResponse.builder(response).build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/me")
     public APIResponse getMyRecipes() {
         List<RecipeResponse> response = recipeService.getMyRecipes();
         return APIResponse.builder(response).build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
     public APIResponse getRecipeById(@PathVariable String id) {
         RecipeResponse response = recipeService.getRecipeById(id);
         return APIResponse.builder(response).build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @PostMapping("/{id}/favorite")
     public APIResponse addFavoriteRecipe(@PathVariable String id) {
         recipeService.addFavoriteRecipe(id);
         return APIResponse.builder("Đã thêm vào danh sách yêu thích").build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @DeleteMapping("/{id}/favorite")
     public APIResponse removeFavoriteRecipe(@PathVariable String id) {
         recipeService.removeFavoriteRecipe(id);
         return APIResponse.builder("Đã xóa khỏi danh sách yêu thích").build();
     }
 
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/favorites")
     public APIResponse getMyFavoriteRecipes() {
         List<RecipeResponse> response = recipeService.getMyFavoriteRecipes();

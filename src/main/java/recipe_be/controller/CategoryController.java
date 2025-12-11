@@ -17,23 +17,27 @@ import java.util.List;
 @RequestMapping("${api.recipe.app.url}/categories")
 public class CategoryController {
     private final CategoryService categoryService;
-    
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping()
     public APIResponse createCategory(@RequestBody CategoryRequest request) {
         return APIResponse.builder(categoryService.createCategory(request)).build();
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
     public APIResponse updateCategory(@PathVariable String id, @RequestBody CategoryRequest request) {
         return APIResponse.builder(categoryService.updateCategory(id, request)).build();
     }
-    
+
+    @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
     public APIResponse deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
         return APIResponse.builder("Xóa category thành công!").build();
     }
-    
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping()
     public APIResponse getAllCategories() {
         List<CategoryResponse> response = categoryService.getAllCategories();
