@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import recipe_be.dto.request.RecipeRequest;
+import recipe_be.dto.response.IngredientItemResponse;
+import recipe_be.dto.response.NutritionItemResponse;
 import recipe_be.dto.response.RecipeResponse;
 import recipe_be.entity.*;
 import recipe_be.enums.Role;
@@ -207,7 +209,7 @@ public class RecipeService {
         if (recipe.getIngredients() != null) {
             response.setIngredients(recipe.getIngredients().stream().map(i -> {
                 Ingredient ing = ingredientService.getById(i.getIngredientId());
-                return new RecipeResponse.IngredientItemResponse(
+                return new IngredientItemResponse(
                         ingredientMapper.toIngredientResponse(ing),
                         i.getQuantity()
                 );
@@ -218,7 +220,7 @@ public class RecipeService {
         if (recipe.getNutritions() != null) {
             response.setNutritions(recipe.getNutritions().stream().map(n -> {
                 Nutrition nut = nutritionService.getById(n.getNutritionId());
-                return new RecipeResponse.NutritionItemResponse(
+                return new NutritionItemResponse(
                         nutritionMapper.toNutritionResponse(nut),
                         n.getValue()
                 );

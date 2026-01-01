@@ -23,20 +23,5 @@ public class RecipeResponse {
     private List<IngredientItemResponse> ingredients;
     private List<NutritionItemResponse> nutritions;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class IngredientItemResponse {
-        private IngredientResponse ingredient;
-        private double quantity;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class NutritionItemResponse {
-        private NutritionResponse nutrition;
-        private double value;
-    }
 }
 

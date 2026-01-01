@@ -13,8 +13,5 @@ import java.util.List;
 @Document(collection = "carts")
 public class Cart extends  BaseEntity {
     private String userId;
-    private double totalPrice;
-    private boolean isCheckedOut;
-    @DBRef
     private List<CartItem> items;
 }
