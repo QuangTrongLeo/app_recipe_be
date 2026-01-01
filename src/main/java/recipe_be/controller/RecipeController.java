@@ -87,4 +87,11 @@ public class RecipeController {
         List<RecipeResponse> response = recipeService.getMyFavoriteRecipes();
         return APIResponse.builder(response).build();
     }
+
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
+    @GetMapping("/searched")
+    public APIResponse searchRecipes(@RequestParam String keyword) {
+        List<RecipeResponse> response = recipeService.searchRecipes(keyword);
+        return APIResponse.builder(response).build();
+    }
 }
