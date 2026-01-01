@@ -6,8 +6,10 @@ import recipe_be.dto.request.CategoryRequest;
 import recipe_be.dto.response.CategoryResponse;
 import recipe_be.entity.Category;
 import recipe_be.entity.User;
+import recipe_be.enums.ErrorCode;
 import recipe_be.enums.Role;
 import recipe_be.enums.Status;
+import recipe_be.exception.AppException;
 import recipe_be.mapper.CategoryMapper;
 import recipe_be.repository.CategoryRepository;
 
@@ -23,7 +25,7 @@ public class CategoryService {
     // ===== TẠO DANH MỤC =====
     public CategoryResponse createCategory(CategoryRequest request) {
         if (request.getName() == null || request.getName().isEmpty()) {
-            throw new RuntimeException("Invalid category name");
+            throw new AppException(ErrorCode.BAD_REQUEST);
         }
         Category category = new Category();
         category.setName(request.getName());
@@ -48,7 +50,7 @@ public class CategoryService {
     
     public Category getById(String id) {
         return categoryRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy category có id: " + id));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
     public List<CategoryResponse> getAllCategories() {

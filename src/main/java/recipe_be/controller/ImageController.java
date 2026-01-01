@@ -3,8 +3,11 @@ package recipe_be.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import recipe_be.dto.response.APIResponse;
+import recipe_be.dto.response.ApiResponse;
+import recipe_be.dto.response.ImageResponse;
 import recipe_be.service.ImageService;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
@@ -14,21 +17,27 @@ public class ImageController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
-    public APIResponse getAllImages() {
-        return APIResponse.builder(imageService.getAllImages()).build();
+    public ApiResponse<List<ImageResponse>> getAllImages() {
+        return ApiResponse.<List<ImageResponse>>builder()
+                .result(imageService.getAllImages())
+                .build();
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{id}")
-    public APIResponse getImageById(@PathVariable String id) {
-        return APIResponse.builder(imageService.getImageById(id)).build();
+    public ApiResponse<ImageResponse> getImageById(@PathVariable String id) {
+        return ApiResponse.<ImageResponse>builder()
+                .result(imageService.getImageById(id))
+                .build();
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
-    public APIResponse deleteImageById(@PathVariable String id) {
+    public ApiResponse<Boolean> deleteImageById(@PathVariable String id) {
         imageService.deleteById(id);
-        return APIResponse.builder("Xóa ảnh thành công").build();
+        return ApiResponse.<Boolean>builder()
+                .result(true)
+                .build();
     }
 }
 

@@ -9,6 +9,8 @@ import recipe_be.dto.response.RecipeResponse;
 import recipe_be.dto.response.cart.CartItemResponse;
 import recipe_be.dto.response.cart.CartResponse;
 import recipe_be.entity.*;
+import recipe_be.enums.ErrorCode;
+import recipe_be.exception.AppException;
 import recipe_be.mapper.CartMapper;
 import recipe_be.mapper.IngredientMapper;
 import recipe_be.mapper.RecipeMapper;
@@ -40,7 +42,7 @@ public class CartService {
     
     public CartResponse getCart(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new RuntimeException("User not found."));
+                new AppException(ErrorCode.NOT_FOUND));
 
         Cart cart = cartRepository.findByUserId(user.getId()).orElse(null);
         if (cart == null) {
@@ -76,9 +78,9 @@ public class CartService {
     
     public CartResponse addToCart( String userId, CartItemRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> 
-                new RuntimeException("User not found."));
+                new AppException(ErrorCode.NOT_FOUND));
         Cart cart = cartRepository.findByUserId(user.getId()).orElse(null);
-        Recipe recipe = recipeRepository.findById(request.getRecipeId()).orElseThrow(()-> new RuntimeException("Recipe not found."));
+        Recipe recipe = recipeRepository.findById(request.getRecipeId()).orElseThrow(()-> new AppException(ErrorCode.NOT_FOUND));
 
         if (cart == null) {
             cart = new Cart();
@@ -92,7 +94,7 @@ public class CartService {
         
         for (CartItem item : cart.getItems()) {
             if (item.getRecipeId().equals(request.getRecipeId())) {
-               throw new RuntimeException("Recipe already exist.");
+               throw new AppException(ErrorCode.RESOURCE_ALREADY_EXISTS);
             }
         }
         
@@ -110,14 +112,14 @@ public class CartService {
     
     public boolean removeItem(String userId, CartItemRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new RuntimeException("User not found."));
+                new AppException(ErrorCode.NOT_FOUND));
         Cart cart = cartRepository.findByUserId(user.getId()).orElseThrow(() -> 
-                new RuntimeException("Cart not found."));
+                new AppException(ErrorCode.NOT_FOUND));
 
         boolean removed = cart.getItems().removeIf(
                 item -> item.getRecipeId().equals(request.getRecipeId())
         );
-        if (!removed) throw new RuntimeException("Item not found in cart.");
+        if (!removed) throw new AppException(ErrorCode.NOT_FOUND);
         cartRepository.save(cart);
         
         return removed ;
@@ -125,16 +127,16 @@ public class CartService {
     
     public CartItemResponse getItemDetail(String userId, String recipeId) {
         User user = userRepository.findById(userId).orElseThrow(() ->
-                new RuntimeException("User not found."));
+                new AppException(ErrorCode.NOT_FOUND));
         Cart cart = cartRepository.findByUserId(user.getId()).orElseThrow(() ->
-                new RuntimeException("Cart not found."));
+                new AppException(ErrorCode.NOT_FOUND));
         Recipe recipe = recipeRepository.findById(recipeId).orElseThrow(() ->
-                new RuntimeException("Recipe not found."));
+                new AppException(ErrorCode.NOT_FOUND));
 
         CartItem cartItem = cart.getItems().stream()
                 .filter(i -> i.getRecipeId().equals(recipeId))
                 .findFirst()
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
         
         List<String> ingredientIds = new ArrayList<>();
 
@@ -167,24 +169,24 @@ public class CartService {
     
     public CartResponse updateQuantity( String userId, CartItemRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> 
-                new RuntimeException("User not found."));
+                new AppException(ErrorCode.NOT_FOUND));
         Cart cart = cartRepository.findByUserId(user.getId()).orElseThrow(() ->
-            new RuntimeException("Cart not found."));
+            new AppException(ErrorCode.NOT_FOUND));
         
         List<String> ingredientIds = request.getIngredients().stream().map(IngredientItem::getIngredientId).toList();
         
         int countSize = ingredientRepository.countByIdIn(ingredientIds);
         if (countSize != ingredientIds.size()) {
-            throw new RuntimeException("Invalid request.");
+            throw new AppException(ErrorCode.BAD_REQUEST);
         }
         
         if (request.getRecipeId() == null || request.getRecipeId().equals("") || request.getIngredients().isEmpty()) {
-            throw new RuntimeException("Recipe or Ingredient not found.");
+            throw new AppException(ErrorCode.BAD_REQUEST);
         }
 
         CartItem cartItem = cart.getItems().stream().filter(i -> i.getRecipeId().equals(request.getRecipeId())).findFirst().orElse(null);
         if (cartItem == null) {
-            throw new RuntimeException("Item not found.");
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
         cartItem.setIngredients(request.getIngredients());
         cartRepository.save(cart);

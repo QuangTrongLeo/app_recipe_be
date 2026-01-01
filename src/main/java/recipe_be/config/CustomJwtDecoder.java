@@ -9,6 +9,8 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
+import recipe_be.enums.ErrorCode;
+import recipe_be.exception.AppException;
 import recipe_be.service.auth.AuthService;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -29,7 +31,7 @@ public class CustomJwtDecoder implements JwtDecoder {
 
         try {
             if (authService.verifyToken(token) == null) {
-                throw new RuntimeException("Authentication failed");
+                throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
             }
         } catch (JOSEException | ParseException e) {
             throw new RuntimeException(e);

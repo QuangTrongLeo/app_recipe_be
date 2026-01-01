@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import recipe_be.dto.response.ImageResponse;
 import recipe_be.entity.Image;
+import recipe_be.enums.ErrorCode;
+import recipe_be.exception.AppException;
 import recipe_be.mapper.ImageMapper;
 import recipe_be.repository.ImageRepository;
 
@@ -95,7 +97,7 @@ public class ImageService {
 
     public Image getById(String id) {
         return imageRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy ảnh với ID: " + id));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
     private Image buildImage(String url) {
         return Image.builder().url(url).build();
