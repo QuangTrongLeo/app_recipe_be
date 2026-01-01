@@ -1,5 +1,6 @@
 package recipe_be.controller;
 
+import com.cloudinary.Api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -110,8 +111,10 @@ public class RecipeController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/searched")
-    public APIResponse searchRecipes(@RequestParam String keyword) {
+    public ApiResponse<List<RecipeResponse>> searchRecipes(@RequestParam String keyword) {
         List<RecipeResponse> response = recipeService.searchRecipes(keyword);
-        return APIResponse.builder(response).build();
+        return ApiResponse.<List<RecipeResponse>>builder()
+                .result(response)
+                .build();
     }
 }
