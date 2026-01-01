@@ -188,6 +188,15 @@ public class RecipeService {
         return enrichRecipe(recipe);
     }
 
+    // ===== TÌM KIẾM BẰNG TỪ KHÓA =====
+    public List<RecipeResponse> searchRecipes(String keyword) {
+        if (!StringUtils.hasText(keyword)) {
+            return List.of();
+        }
+        List<Recipe> recipes = recipeRepository.findByNameContainingIgnoreCase(keyword);
+        return recipeMapper.toRecipeResponseList(recipes);
+    }
+
     public Recipe getById(String id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy công thức."));
