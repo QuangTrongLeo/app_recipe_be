@@ -13,7 +13,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.recipe.app.url}/nutrition")
+@RequestMapping("/nutrition")
 public class NutritionController {
     private final NutritionService nutritionService;
 

@@ -8,7 +8,7 @@ import recipe_be.service.ImageService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.recipe.app.url}/images")
+@RequestMapping("/images")
 public class ImageController {
     private final ImageService imageService;
 

@@ -21,9 +21,6 @@ import javax.crypto.spec.SecretKeySpec;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    @Value("${api.recipe.app.url}")
-    private String API_PREFIX;
-
     @Value("${app.jwt.secret}")
     private String signerKey;
 
@@ -33,8 +30,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         final String[] PUBLIC_URL = {
-                API_PREFIX + "/auth/login",
-                API_PREFIX + "/auth/register",
+                "/auth/**",
         };
         http.csrf(AbstractHttpConfigurer::disable);
 
