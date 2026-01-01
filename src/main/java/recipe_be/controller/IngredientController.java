@@ -12,7 +12,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.recipe.app.url}/ingredients")
+@RequestMapping("/ingredients")
 public class IngredientController {
     private final IngredientService ingredientService;
 

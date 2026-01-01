@@ -1,4 +1,4 @@
-package recipe_be.controller.auth;
+package recipe_be.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,7 +13,7 @@ import recipe_be.service.auth.AuthService;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.recipe.app.url}/auth")
+@RequestMapping("/auth")
 public class AuthController {
     private final AuthService authService;
 

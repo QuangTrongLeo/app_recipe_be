@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import recipe_be.dto.request.auth.RegisterRequest;
 import recipe_be.dto.request.user.UpdateProfileRequest;
 import recipe_be.dto.response.UserResponse;
+import recipe_be.entity.Cart;
 import recipe_be.entity.Image;
 import recipe_be.entity.User;
 import recipe_be.enums.Role;
@@ -24,6 +25,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final UserMapper userMapper;
+    private final CartService cartService;
 
     public void createUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -31,6 +33,10 @@ public class UserService {
         }
         User user = buildUser(request);
         save(user);
+        
+        Cart cart = new Cart();
+        cart.setUserId(user.getId());
+        cartService.create(cart);
     }
     
     public UserResponse updateProfileByEmail(UpdateProfileRequest request) {
