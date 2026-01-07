@@ -76,7 +76,7 @@ public class CartService {
         return cartResponse;
     }
     
-    public CartResponse addToCart( String userId, CartItemRequest request) {
+    public Boolean addToCart( String userId, CartItemRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> 
                 new AppException(ErrorCode.NOT_FOUND));
         Cart cart = cartRepository.findByUserId(user.getId()).orElse(null);
@@ -107,7 +107,8 @@ public class CartService {
         cart.getItems().add(cartItem);
         cartRepository.save(cart);
         
-        return cartMapper.toResponse(cart);
+        cartMapper.toResponse(cart);
+        return true;
     }
     
     public boolean removeItem(String userId, CartItemRequest request) {
@@ -167,7 +168,7 @@ public class CartService {
     }
     
     
-    public CartResponse updateQuantity( String userId, CartItemRequest request) {
+    public boolean updateQuantity( String userId, CartItemRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> 
                 new AppException(ErrorCode.NOT_FOUND));
         Cart cart = cartRepository.findByUserId(user.getId()).orElseThrow(() ->
@@ -190,7 +191,9 @@ public class CartService {
         }
         cartItem.setIngredients(request.getIngredients());
         cartRepository.save(cart);
-        return cartMapper.toResponse(cart);
+        cartMapper.toResponse(cart);
+        
+        return true;
     }
     
     
