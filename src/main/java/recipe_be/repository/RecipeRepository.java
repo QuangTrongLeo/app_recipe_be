@@ -10,4 +10,6 @@ import java.util.List;
 public interface RecipeRepository extends MongoRepository<Recipe, String> {
     List<Recipe> findByUserId(String userId);
     List<Recipe> findByCategoryId(String categoryId);
+    List<Recipe> findByIdIn(List<String> ids);
+    List<Recipe> findByNameContainingIgnoreCase(String keyword);
 }

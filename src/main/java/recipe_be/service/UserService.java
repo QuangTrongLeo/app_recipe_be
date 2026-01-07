@@ -9,9 +9,12 @@ import org.springframework.web.multipart.MultipartFile;
 import recipe_be.dto.request.auth.RegisterRequest;
 import recipe_be.dto.request.user.UpdateProfileRequest;
 import recipe_be.dto.response.UserResponse;
+import recipe_be.entity.Cart;
 import recipe_be.entity.Image;
 import recipe_be.entity.User;
+import recipe_be.enums.ErrorCode;
 import recipe_be.enums.Role;
+import recipe_be.exception.AppException;
 import recipe_be.mapper.UserMapper;
 import recipe_be.repository.UserRepository;
 import recipe_be.utils.CurrentUserUtils;
@@ -24,13 +27,18 @@ public class UserService {
     private final UserRepository userRepository;
     private final ImageService imageService;
     private final UserMapper userMapper;
+    private final CartService cartService;
 
     public void createUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Tài khoản này đã tồn tại!");
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
         User user = buildUser(request);
         save(user);
+        
+        Cart cart = new Cart();
+        cart.setUserId(user.getId());
+        cartService.create(cart);
     }
     
     public UserResponse updateProfileByEmail(UpdateProfileRequest request) {
@@ -73,7 +81,7 @@ public class UserService {
 
     public User getUserByEmail(String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User không tồn tại!"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
 

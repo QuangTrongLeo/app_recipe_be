@@ -5,42 +5,49 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import recipe_be.dto.request.CategoryRequest;
-import recipe_be.dto.response.APIResponse;
+import recipe_be.dto.response.ApiResponse;
 import recipe_be.dto.response.CategoryResponse;
-import recipe_be.mapper.CategoryMapper;
 import recipe_be.service.CategoryService;
 
 import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("${api.recipe.app.url}/categories")
+@RequestMapping("/categories")
 public class CategoryController {
     private final CategoryService categoryService;
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PostMapping()
-    public APIResponse createCategory(@RequestBody CategoryRequest request) {
-        return APIResponse.builder(categoryService.createCategory(request)).build();
+    public ApiResponse<CategoryResponse> createCategory(@RequestBody CategoryRequest request) {
+        return ApiResponse.<CategoryResponse>builder()
+                .result(categoryService.createCategory(request))
+                .build();
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @PutMapping("/{id}")
-    public APIResponse updateCategory(@PathVariable String id, @RequestBody CategoryRequest request) {
-        return APIResponse.builder(categoryService.updateCategory(id, request)).build();
+    public ApiResponse<CategoryResponse> updateCategory(@PathVariable String id, @RequestBody CategoryRequest request) {
+        return ApiResponse.<CategoryResponse>builder()
+                .result(categoryService.updateCategory(id, request))
+                .build();
     }
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
-    public APIResponse deleteCategory(@PathVariable String id) {
+    public ApiResponse<String> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
-        return APIResponse.builder("Xóa category thành công!").build();
+        return ApiResponse.<String>builder()
+                .result("Success")
+                .build();
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping()
-    public APIResponse getAllCategories() {
+    public ApiResponse<List<CategoryResponse>> getAllCategories() {
         List<CategoryResponse> response = categoryService.getAllCategories();
-        return APIResponse.builder(response).build();
+        return ApiResponse.<List<CategoryResponse>>builder()
+                .result(response)
+                .build();
     }
 }

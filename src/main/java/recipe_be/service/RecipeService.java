@@ -5,9 +5,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import recipe_be.dto.request.RecipeRequest;
+import recipe_be.dto.response.IngredientItemResponse;
+import recipe_be.dto.response.NutritionItemResponse;
 import recipe_be.dto.response.RecipeResponse;
 import recipe_be.entity.*;
+import recipe_be.enums.ErrorCode;
 import recipe_be.enums.Role;
+import recipe_be.exception.AppException;
 import recipe_be.mapper.CategoryMapper;
 import recipe_be.mapper.IngredientMapper;
 import recipe_be.mapper.NutritionMapper;
@@ -67,7 +71,7 @@ public class RecipeService {
         User user = userService.getUserById(userId);
 
         if (!recipe.getUserId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Bạn không có quyền chỉnh sửa công thức này");
+            throw new AppException(ErrorCode.ACCESS_DENIED);
         }
 
         if (StringUtils.hasText(request.getName())) recipe.setName(request.getName());
@@ -96,7 +100,7 @@ public class RecipeService {
         String userId = CurrentUserUtils.getUserId();
         User user = userService.getUserById(userId);
         if (!recipe.getUserId().equals(user.getId()) && user.getRole() != Role.ADMIN) {
-            throw new RuntimeException("Bạn không có quyền xóa công thức này");
+            throw new AppException(ErrorCode.ACCESS_DENIED);
         }
         if (StringUtils.hasText(recipe.getImage())) {
             imageService.deleteByUrl(recipe.getImage());
@@ -117,7 +121,7 @@ public class RecipeService {
         boolean exists = user.getFavoriteRecipes().stream().anyMatch(fav -> fav.getRecipeId().equals(recipeId));
 
         if (exists) {
-            throw new RuntimeException("Công thức này đã có trong danh sách yêu thích.");
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
 
         user.getFavoriteRecipes().add(new FavoriteRecipe(recipeId));
@@ -130,13 +134,13 @@ public class RecipeService {
         User user = userService.getUserById(userId);
 
         if (user.getFavoriteRecipes() == null || user.getFavoriteRecipes().isEmpty()) {
-            throw new RuntimeException("Danh sách yêu thích đang trống.");
+            throw new AppException(ErrorCode.BAD_REQUEST);
         }
 
         boolean removed = user.getFavoriteRecipes().removeIf(fav -> fav.getRecipeId().equals(recipeId));
 
         if (!removed) {
-            throw new RuntimeException("Công thức không tồn tại trong danh sách yêu thích.");
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
 
         userService.save(user);
@@ -186,9 +190,18 @@ public class RecipeService {
         return enrichRecipe(recipe);
     }
 
+    // ===== TÌM KIẾM BẰNG TỪ KHÓA =====
+    public List<RecipeResponse> searchRecipes(String keyword) {
+        if (!StringUtils.hasText(keyword)) {
+            return List.of();
+        }
+        List<Recipe> recipes = recipeRepository.findByNameContainingIgnoreCase(keyword);
+        return recipeMapper.toRecipeResponseList(recipes);
+    }
+
     public Recipe getById(String id) {
         return recipeRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy công thức."));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
     public Recipe save(Recipe recipe) {
@@ -207,7 +220,7 @@ public class RecipeService {
         if (recipe.getIngredients() != null) {
             response.setIngredients(recipe.getIngredients().stream().map(i -> {
                 Ingredient ing = ingredientService.getById(i.getIngredientId());
-                return new RecipeResponse.IngredientItemResponse(
+                return new IngredientItemResponse(
                         ingredientMapper.toIngredientResponse(ing),
                         i.getQuantity()
                 );
@@ -218,7 +231,7 @@ public class RecipeService {
         if (recipe.getNutritions() != null) {
             response.setNutritions(recipe.getNutritions().stream().map(n -> {
                 Nutrition nut = nutritionService.getById(n.getNutritionId());
-                return new RecipeResponse.NutritionItemResponse(
+                return new NutritionItemResponse(
                         nutritionMapper.toNutritionResponse(nut),
                         n.getValue()
                 );

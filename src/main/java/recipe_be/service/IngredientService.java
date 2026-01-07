@@ -8,6 +8,8 @@ import recipe_be.dto.request.IngredientRequest;
 import recipe_be.dto.response.IngredientResponse;
 import recipe_be.entity.Ingredient;
 import recipe_be.entity.Image;
+import recipe_be.enums.ErrorCode;
+import recipe_be.exception.AppException;
 import recipe_be.mapper.IngredientMapper;
 import recipe_be.repository.IngredientRepository;
 
@@ -101,7 +103,7 @@ public class IngredientService {
     // Lấy nguyên liệu bằng ID
     public Ingredient getById(String id) {
         return ingredientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nguyên liệu"));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
     public Ingredient save(Ingredient ingredient) {

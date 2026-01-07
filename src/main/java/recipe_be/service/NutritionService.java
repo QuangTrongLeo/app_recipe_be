@@ -6,7 +6,9 @@ import org.springframework.util.StringUtils;
 import recipe_be.dto.request.NutritionRequest;
 import recipe_be.dto.response.NutritionResponse;
 import recipe_be.entity.Nutrition;
+import recipe_be.enums.ErrorCode;
 import recipe_be.enums.NutritionType;
+import recipe_be.exception.AppException;
 import recipe_be.mapper.NutritionMapper;
 import recipe_be.repository.NutritionRepository;
 
@@ -50,7 +52,7 @@ public class NutritionService {
     // ===== XÓA NUTRITION =====
     public void deleteNutrition(String id) {
         if (!nutritionRepository.existsById(id)) {
-            throw new RuntimeException("Không tìm thấy nutrition với id: " + id);
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
         nutritionRepository.deleteById(id);
     }
@@ -78,14 +80,14 @@ public class NutritionService {
         try {
             return NutritionType.valueOf(typeName.trim().toUpperCase());
         } catch (IllegalArgumentException e) {
-            throw new RuntimeException("Không tìm thấy NutritionType: " + typeName);
+            throw new AppException(ErrorCode.NOT_FOUND);
         }
     }
 
     // ===== Lấy Nutrition bằng ID =====
     public Nutrition getById(String id){
         return nutritionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy nutrition với id: " + id));
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));
     }
 
     public Nutrition save(Nutrition nutrition) {

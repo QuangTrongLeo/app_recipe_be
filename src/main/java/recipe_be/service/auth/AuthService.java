@@ -14,6 +14,8 @@ import recipe_be.dto.request.auth.LoginRequest;
 import recipe_be.dto.request.auth.RegisterRequest;
 import recipe_be.dto.response.auth.AuthenticationResponse;
 import recipe_be.entity.User;
+import recipe_be.enums.ErrorCode;
+import recipe_be.exception.AppException;
 import recipe_be.service.UserService;
 
 import java.text.ParseException;
@@ -38,12 +40,12 @@ public class AuthService {
     public AuthenticationResponse login(LoginRequest request) {
         User user = userService.getUserByEmail(request.getEmail());
         if (user == null) {
-            throw new RuntimeException("Authentication failed");
+            throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Authentication failed");
+            throw new AppException(ErrorCode.AUTHENTICATION_FAILED);
         }
 
         AuthenticationResponse authenticationResponse = new AuthenticationResponse();
