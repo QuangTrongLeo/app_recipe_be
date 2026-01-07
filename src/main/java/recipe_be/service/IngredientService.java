@@ -84,7 +84,7 @@ public class IngredientService {
     //  ===== LẤY TẤT CẢ NGUYÊN LIỆU =====
     public List<IngredientResponse> getAllIngredients() {
         List<Ingredient> ingredients = ingredientRepository.findAll();
-        return ingredientMapper.toIngredientRponseList(ingredients);
+        return ingredientMapper.toIngredientResponseList(ingredients);
     }
 
     //  ===== XÓA NGUYÊN LIỆU =====

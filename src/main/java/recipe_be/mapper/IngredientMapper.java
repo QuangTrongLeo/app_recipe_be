@@ -10,10 +10,9 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface IngredientMapper {
-    @Mapping(target = "image", source = "image")
+
+    @Mapping(source = "image.url", target = "image")
     IngredientResponse toIngredientResponse(Ingredient ingredient);
-    List<IngredientResponse> toIngredientRponseList(List<Ingredient> ingredients);
-    default String map(Image image) {
-        return image == null ? null : image.getUrl();
-    }
+
+    List<IngredientResponse> toIngredientResponseList(List<Ingredient> ingredients);
 }
