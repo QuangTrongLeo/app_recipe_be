@@ -8,6 +8,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import recipe_be.dto.request.auth.RegisterRequest;
 import recipe_be.dto.request.user.UpdateProfileRequest;
+import recipe_be.dto.response.StripeCustomerResponse;
 import recipe_be.dto.response.UserResponse;
 import recipe_be.entity.Cart;
 import recipe_be.entity.Image;
@@ -28,17 +29,22 @@ public class UserService {
     private final ImageService imageService;
     private final UserMapper userMapper;
     private final CartService cartService;
-
+    private final StripeService stripeService;
+    
     public void createUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.NOT_FOUND);
+            throw new AppException(ErrorCode.RESOURCE_ALREADY_EXISTS);
         }
         User user = buildUser(request);
-        save(user);
         
         Cart cart = new Cart();
         cart.setUserId(user.getId());
         cartService.create(cart);
+
+        StripeCustomerResponse  customer = stripeService.createCustomer(request.getUsername(), request.getEmail());
+        user.setCustomerId(customer.getId());
+
+        save(user);
     }
     
     public UserResponse updateProfileByEmail(UpdateProfileRequest request) {

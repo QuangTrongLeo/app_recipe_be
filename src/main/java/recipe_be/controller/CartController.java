@@ -34,8 +34,8 @@ public class CartController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PutMapping("/add-to-cart")
-    public ApiResponse<CartResponse> addToCart(@RequestBody CartItemRequest request, @PathVariable("id") String userId){
-        return ApiResponse.<CartResponse>builder()
+    public ApiResponse<Boolean> addToCart(@RequestBody CartItemRequest request, @PathVariable("id") String userId){
+        return ApiResponse.<Boolean>builder()
                 .result(cartService.addToCart(userId,request))
                 .build();
     }
@@ -50,8 +50,8 @@ public class CartController {
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @PutMapping("/update")
-    public ApiResponse<CartResponse> updateQuantity(@RequestBody CartItemRequest request, @PathVariable("id") String userId){
-        return ApiResponse.<CartResponse>builder()
+    public ApiResponse<Boolean> updateQuantity(@RequestBody CartItemRequest request, @PathVariable("id") String userId){
+        return ApiResponse.<Boolean>builder()
                 .result(cartService.updateQuantity(userId,request))
                 .build();
     }

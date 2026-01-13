@@ -2,7 +2,11 @@ package recipe_be.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import recipe_be.enums.OrderStatus;
+import recipe_be.enums.PaymentMethod;
+import recipe_be.enums.PaymentStatus;
 import recipe_be.enums.Status;
 import java.util.Date;
 import java.util.List;
@@ -17,27 +21,10 @@ public class Order {
     private String id;
     private String userId;
     private double totalPrice;
-    private Status status;
+    private OrderStatus status;
     private Date createdAt;
-
-    private List<OrderItem> items;
-    private Shipping shipping;
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class OrderItem {
-        private String ingredientId;
-        private int quantity;
-        private double total;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class Shipping {
-        private String address;
-        private String phone;
-    }
+    private PaymentMethod paymentMethod;
+    private PaymentStatus paymentStatus;
+    private List<OrderItem> orderItems;
 }
 

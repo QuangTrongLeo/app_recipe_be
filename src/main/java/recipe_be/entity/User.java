@@ -25,6 +25,7 @@ public class User {
     private String avatar;
     private String bio;
     private Role role;
+    private String customerId;
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "Asia/Ho_Chi_Minh")
     private Date createdAt;
