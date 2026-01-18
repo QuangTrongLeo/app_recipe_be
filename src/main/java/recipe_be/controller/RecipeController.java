@@ -2,6 +2,8 @@ package recipe_be.controller;
 
 import com.cloudinary.Api;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import recipe_be.dto.request.RecipeRequest;
@@ -48,18 +50,18 @@ public class RecipeController {
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping
-    public ApiResponse<List<RecipeResponse>> getAllRecipes() {
-        List<RecipeResponse> response = recipeService.getAllRecipes();
-        return ApiResponse.<List<RecipeResponse>>builder()
+    public ApiResponse<Page<RecipeResponse>> getAllRecipes(Pageable pageable) {
+        Page<RecipeResponse> response = recipeService.getAllRecipes(pageable);
+        return ApiResponse.<Page<RecipeResponse>>builder()
                 .result(response)
                 .build();
     }
 
     @PreAuthorize("hasAnyAuthority('ADMIN', 'USER')")
     @GetMapping("/{categoryId}/category")
-    public ApiResponse<List<RecipeResponse>> getAllRecipesByCategoryId(@PathVariable String categoryId) {
-        List<RecipeResponse> response = recipeService.getAllRecipesByCategoryId(categoryId);
-        return ApiResponse.<List<RecipeResponse>>builder()
+    public ApiResponse<Page<RecipeResponse>> getAllRecipesByCategoryId(@PathVariable String categoryId, Pageable pageable) {
+        Page<RecipeResponse> response = recipeService.getAllRecipesByCategoryId(categoryId, pageable);
+        return ApiResponse.<Page<RecipeResponse>>builder()
                 .result(response)
                 .build();
     }

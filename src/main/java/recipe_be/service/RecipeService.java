@@ -1,13 +1,14 @@
 package recipe_be.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 import recipe_be.dto.request.RecipeRequest;
-import recipe_be.dto.response.IngredientItemResponse;
-import recipe_be.dto.response.NutritionItemResponse;
-import recipe_be.dto.response.RecipeResponse;
+import recipe_be.dto.response.*;
 import recipe_be.entity.*;
 import recipe_be.enums.ErrorCode;
 import recipe_be.enums.Role;
@@ -16,12 +17,16 @@ import recipe_be.mapper.CategoryMapper;
 import recipe_be.mapper.IngredientMapper;
 import recipe_be.mapper.NutritionMapper;
 import recipe_be.mapper.RecipeMapper;
+import recipe_be.repository.CategoryRepository;
+import recipe_be.repository.IngredientRepository;
+import recipe_be.repository.NutritionRepository;
 import recipe_be.repository.RecipeRepository;
 import recipe_be.utils.CurrentUserUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.sql.Struct;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +37,13 @@ public class RecipeService {
     private final CategoryMapper categoryMapper;
     private final IngredientMapper ingredientMapper;
     private final NutritionMapper nutritionMapper;
-
+    private final NutritionRepository nutritionRepository;
     private final ImageService imageService;
     private final UserService userService;
     private final CategoryService categoryService;
+    private final CategoryRepository categoryRepository;
     private final IngredientService ingredientService;
+    private final IngredientRepository ingredientRepository;
     private final NutritionService nutritionService;
 
     // ===== TẠO CÔNG THỨC =====
@@ -162,17 +169,139 @@ public class RecipeService {
     }
 
     // ===== LẤY TẤT CẢ =====
-    public List<RecipeResponse> getAllRecipes() {
-        return recipeRepository.findAll().stream()
-                .map(this::enrichRecipe)
-                .toList();
+    public Page<RecipeResponse> getAllRecipes(Pageable pageable) {
+        Page<Recipe> recipes = recipeRepository.findAll(pageable);
+        List<RecipeResponse> responses = new ArrayList<>();
+        // Categories
+        Set<String> categoryIds = recipes.getContent().stream()
+                .map(Recipe::getCategoryId)
+                .collect(Collectors.toSet());
+        
+        Map<String, CategoryResponse> categoryMap =
+                categoryRepository.findAllById(categoryIds).stream()
+                        .map(categoryMapper::toCategoryResponse)
+                        .collect(Collectors.toMap(CategoryResponse::getId, Function.identity()));
+        
+        // Ingredients
+        Set<String> ingredientIds = recipes.getContent().stream()
+                .flatMap(recipe -> recipe.getIngredients().stream().map(IngredientItem::getIngredientId))
+                .collect(Collectors.toSet());
+        
+        Map<String ,IngredientResponse> ingredientMap = ingredientRepository.findByIdIn(ingredientIds).stream()
+                .map(ingredientMapper::toIngredientResponse)
+                .collect(Collectors.toMap(
+                        IngredientResponse::getId, Function.identity()
+                ));
+        
+        // Nutritions
+        Set<String> nutritionIds = recipes.getContent().stream()
+                .flatMap(recipe -> recipe.getNutritions().stream().map(NutritionItem::getNutritionId))
+                .collect(Collectors.toSet());
+        
+        Map<String, NutritionResponse> nutritionMap = nutritionRepository.findByIdIn(nutritionIds).stream()
+                .map(nutritionMapper::toNutritionResponse)
+                .collect(Collectors.toMap(
+                        NutritionResponse::getId, Function.identity()
+                ));
+        
+        
+        recipes.getContent().forEach(recipe -> {
+            RecipeResponse recipeResponse = recipeMapper.toRecipeResponse(recipe);
+            recipeResponse.setCategory(categoryMap.getOrDefault(recipe.getCategoryId(), null));
+            
+            List<IngredientItemResponse> ingredientItemResponses = new ArrayList<>();
+            recipe.getIngredients().forEach(ingredient -> {
+                IngredientItemResponse ingredientItemResponse = new IngredientItemResponse();
+                ingredientItemResponse.setQuantity(ingredient.getQuantity());
+                ingredientItemResponse.setIngredient(ingredientMap.getOrDefault(ingredient.getIngredientId(), null));
+                ingredientItemResponses.add(ingredientItemResponse);
+            });
+            recipeResponse.setIngredients(ingredientItemResponses);
+            
+            List<NutritionItemResponse> nutritionItemResponses = new ArrayList<>();
+            recipe.getNutritions().forEach(nutrition -> {
+                NutritionItemResponse nutritionItemResponse = new NutritionItemResponse();
+                nutritionItemResponse.setValue(nutrition.getValue());
+                nutritionItemResponse.setNutrition(nutritionMap.getOrDefault(nutrition.getNutritionId(), null));
+                nutritionItemResponses.add(nutritionItemResponse);
+            });
+            recipeResponse.setNutritions(nutritionItemResponses);
+            
+            responses.add(recipeResponse);
+        });
+
+        Page<RecipeResponse> responsePage =
+                new PageImpl<>(responses, pageable, recipes.getTotalElements());
+        
+        return responsePage;
     }
 
     // ===== LẤY TẤT CẢ CÔNG THỨC THEO CATEGORY =====
-    public List<RecipeResponse> getAllRecipesByCategoryId(String categoryId) {
-        return recipeRepository.findByCategoryId(categoryId).stream()
-                .map(this::enrichRecipe)
-                .toList();
+    public Page<RecipeResponse> getAllRecipesByCategoryId(String categoryId, Pageable pageable) {
+        Page<Recipe> recipes = recipeRepository.findByCategoryId(categoryId, pageable);
+        List<RecipeResponse> responses = new ArrayList<>();
+        // Categories
+        Set<String> categoryIds = recipes.getContent().stream()
+                .map(Recipe::getCategoryId)
+                .collect(Collectors.toSet());
+
+        Map<String, CategoryResponse> categoryMap =
+                categoryRepository.findAllById(categoryIds).stream()
+                        .map(categoryMapper::toCategoryResponse)
+                        .collect(Collectors.toMap(CategoryResponse::getId, Function.identity()));
+
+        // Ingredients
+        Set<String> ingredientIds = recipes.getContent().stream()
+                .flatMap(recipe -> recipe.getIngredients().stream().map(IngredientItem::getIngredientId))
+                .collect(Collectors.toSet());
+
+        Map<String ,IngredientResponse> ingredientMap = ingredientRepository.findByIdIn(ingredientIds).stream()
+                .map(ingredientMapper::toIngredientResponse)
+                .collect(Collectors.toMap(
+                        IngredientResponse::getId, Function.identity()
+                ));
+
+        // Nutritions
+        Set<String> nutritionIds = recipes.getContent().stream()
+                .flatMap(recipe -> recipe.getNutritions().stream().map(NutritionItem::getNutritionId))
+                .collect(Collectors.toSet());
+
+        Map<String, NutritionResponse> nutritionMap = nutritionRepository.findByIdIn(nutritionIds).stream()
+                .map(nutritionMapper::toNutritionResponse)
+                .collect(Collectors.toMap(
+                        NutritionResponse::getId, Function.identity()
+                ));
+
+
+        recipes.getContent().forEach(recipe -> {
+            RecipeResponse recipeResponse = recipeMapper.toRecipeResponse(recipe);
+            recipeResponse.setCategory(categoryMap.getOrDefault(recipe.getCategoryId(), null));
+
+            List<IngredientItemResponse> ingredientItemResponses = new ArrayList<>();
+            recipe.getIngredients().forEach(ingredient -> {
+                IngredientItemResponse ingredientItemResponse = new IngredientItemResponse();
+                ingredientItemResponse.setQuantity(ingredient.getQuantity());
+                ingredientItemResponse.setIngredient(ingredientMap.getOrDefault(ingredient.getIngredientId(), null));
+                ingredientItemResponses.add(ingredientItemResponse);
+            });
+            recipeResponse.setIngredients(ingredientItemResponses);
+
+            List<NutritionItemResponse> nutritionItemResponses = new ArrayList<>();
+            recipe.getNutritions().forEach(nutrition -> {
+                NutritionItemResponse nutritionItemResponse = new NutritionItemResponse();
+                nutritionItemResponse.setValue(nutrition.getValue());
+                nutritionItemResponse.setNutrition(nutritionMap.getOrDefault(nutrition.getNutritionId(), null));
+                nutritionItemResponses.add(nutritionItemResponse);
+            });
+            recipeResponse.setNutritions(nutritionItemResponses);
+
+            responses.add(recipeResponse);
+        });
+
+        Page<RecipeResponse> responsePage =
+                new PageImpl<>(responses, pageable, recipes.getTotalElements());
+
+        return responsePage;
     }
 
     // ===== LẤY THEO NGƯỜI DÙNG =====
