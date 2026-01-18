@@ -1,5 +1,7 @@
 package recipe_be.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import recipe_be.entity.Recipe;
@@ -12,4 +14,6 @@ public interface RecipeRepository extends MongoRepository<Recipe, String> {
     List<Recipe> findByCategoryId(String categoryId);
     List<Recipe> findByIdIn(List<String> ids);
     List<Recipe> findByNameContainingIgnoreCase(String keyword);
+
+    Page<Recipe> findByCategoryId(String categoryId, Pageable pageable);
 }
