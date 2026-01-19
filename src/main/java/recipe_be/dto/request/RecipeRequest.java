@@ -16,6 +16,6 @@ public class RecipeRequest {
     private String instructions;
     private int time;
     private MultipartFile image;
-    private List<IngredientItem> ingredients; // Thêm
-    private List<NutritionItem> nutritions;  // Thêm
+    private List<IngredientItem> ingredients;
+    private List<NutritionItem> nutritions;
 }

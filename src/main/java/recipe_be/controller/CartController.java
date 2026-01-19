@@ -14,7 +14,13 @@ import recipe_be.service.CartService;
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
-    
+    @PreAuthorize("hasAnyAuthority('USER')")
+    @PutMapping("/add-to-cart")
+    public ApiResponse<CartResponse> addToCart(@RequestBody CartItemRequest request, @PathVariable("id") String userId){
+        return ApiResponse.<CartResponse>builder()
+                .result(cartService.addToCart(userId,request))
+                .build();
+    }
     @PreAuthorize("hasAnyAuthority('USER')")
     @GetMapping("")
     public ApiResponse<CartResponse> getCart(@PathVariable("id") String userId){
@@ -32,13 +38,7 @@ public class CartController {
         
     }
 
-    @PreAuthorize("hasAnyAuthority('USER')")
-    @PutMapping("/add-to-cart")
-    public ApiResponse<CartResponse> addToCart(@RequestBody CartItemRequest request, @PathVariable("id") String userId){
-        return ApiResponse.<CartResponse>builder()
-                .result(cartService.addToCart(userId,request))
-                .build();
-    }
+
 
     @PreAuthorize("hasAnyAuthority('USER')")
     @DeleteMapping("/remove-item")

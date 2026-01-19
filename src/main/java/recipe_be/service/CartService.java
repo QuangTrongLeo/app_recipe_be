@@ -144,7 +144,7 @@ public class CartService {
             ingredientIds.add(ingredient.getIngredientId());
         });
 
-        List<IngredientResponse> ingredientResponse = ingredientMapper.toIngredientRponseList(ingredientRepository.findByIdIn(ingredientIds));
+        List<IngredientResponse> ingredientResponse = ingredientMapper.toIngredientResponseList(ingredientRepository.findByIdIn(ingredientIds));
         Map<String, IngredientResponse> ingredientMap = ingredientResponse.stream().collect(Collectors.toMap(IngredientResponse::getId, ingredient -> ingredient));
         
         CartItemResponse cartItemResponse = new CartItemResponse();
