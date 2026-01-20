@@ -50,4 +50,12 @@ public class CategoryController {
                 .result(response)
                 .build();
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/total")
+    public ApiResponse<Long> totalCategories() {
+        return ApiResponse.<Long>builder()
+                .result(categoryService.totalCategories())
+                .build();
+    }
 }

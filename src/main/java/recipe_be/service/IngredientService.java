@@ -100,6 +100,11 @@ public class IngredientService {
         ingredientRepository.deleteById(id);
     }
 
+    // ===== TỔNG SỐ NGUYÊN LIỆU =====
+    public Long totalIngredients() {
+        return ingredientRepository.count();
+    }
+
     // Lấy nguyên liệu bằng ID
     public Ingredient getById(String id) {
         return ingredientRepository.findById(id)

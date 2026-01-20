@@ -195,6 +195,13 @@ public class CartService {
         
         return true;
     }
-    
-    
+
+    public void deleteByUserId(String userId) {
+        Cart cart = cartRepository.findByUserId(userId)
+                .orElse(null);
+
+        if (cart != null) {
+            cartRepository.delete(cart);
+        }
+    }
 }

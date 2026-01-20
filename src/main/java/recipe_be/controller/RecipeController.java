@@ -119,4 +119,12 @@ public class RecipeController {
                 .result(response)
                 .build();
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/total")
+    public ApiResponse<Long> totalRecipes() {
+        return ApiResponse.<Long>builder()
+                .result(recipeService.totalRecipes())
+                .build();
+    }
 }

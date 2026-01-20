@@ -39,5 +39,13 @@ public class ImageController {
                 .result(true)
                 .build();
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/total")
+    public ApiResponse<Long> totalImages() {
+        return ApiResponse.<Long>builder()
+                .result(imageService.totalImages())
+                .build();
+    }
 }
 

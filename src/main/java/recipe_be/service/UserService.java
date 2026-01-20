@@ -30,7 +30,7 @@ public class UserService {
     private final UserMapper userMapper;
     private final CartService cartService;
     private final StripeService stripeService;
-    
+
     public void createUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.RESOURCE_ALREADY_EXISTS);
@@ -47,7 +47,7 @@ public class UserService {
         save(user);
     }
     
-    public UserResponse updateProfileByEmail(UpdateProfileRequest request) {
+    public UserResponse updateProfileByUserId(UpdateProfileRequest request) {
         String userId = CurrentUserUtils.getUserId();
         User user = getUserById(userId);
 
@@ -75,7 +75,32 @@ public class UserService {
         User savedUser = userRepository.save(user);
         return userMapper.toUserResponse(savedUser);
     }
-    
+
+
+    public List<UserResponse> getAllUsers() {
+        List<User> users = userRepository.findAll();
+        return users.stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+    }
+
+    public Boolean deleteUser(String userId) {
+        User user = getUserById(userId);
+
+        // Nếu có avatar, xóa trên cloud
+        if (StringUtils.hasText(user.getAvatar())) {
+            imageService.deleteByUrl(user.getAvatar());
+        }
+
+        cartService.deleteByUserId(userId);
+        userRepository.delete(user);
+        return true;
+    }
+
+    public Long totalUsers() {
+        return userRepository.count();
+    }
+
     public UserResponse getUserById(){
         String userId = CurrentUserUtils.getUserId();
         return userMapper.toUserResponse(getUserById(userId));

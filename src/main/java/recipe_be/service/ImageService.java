@@ -95,6 +95,10 @@ public class ImageService {
         }
     }
 
+    public Long totalImages() {
+        return imageRepository.count();
+    }
+
     public Image getById(String id) {
         return imageRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

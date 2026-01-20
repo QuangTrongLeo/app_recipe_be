@@ -56,4 +56,8 @@ public class CategoryService {
     public List<CategoryResponse> getAllCategories() {
         return categoryMapper.toCategoryResponseList(categoryRepository.findAll());
     }
+
+    public Long totalCategories() {
+        return categoryRepository.count();
+    }
 }

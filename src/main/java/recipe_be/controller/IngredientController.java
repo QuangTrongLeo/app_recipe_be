@@ -61,4 +61,13 @@ public class IngredientController {
                 .result(response)
                 .build();
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/total")
+    public ApiResponse<Long> totalIngredients() {
+        return ApiResponse.<Long>builder()
+                .result(ingredientService.totalIngredients())
+                .build();
+    }
+
 }

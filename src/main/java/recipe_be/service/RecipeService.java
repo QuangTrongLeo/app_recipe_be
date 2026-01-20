@@ -328,6 +328,11 @@ public class RecipeService {
         return recipeMapper.toRecipeResponseList(recipes);
     }
 
+    // ===== TỔNG SỐ NGUYÊN LIỆU =====
+    public Long totalRecipes() {
+        return recipeRepository.count();
+    }
+
     public Recipe getById(String id) {
         return recipeRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND));

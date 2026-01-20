@@ -78,4 +78,12 @@ public class NutritionController {
                 .result(type)
                 .build();
     }
+
+    @PreAuthorize("hasAuthority('ADMIN')")
+    @GetMapping("/total")
+    public ApiResponse<Long> totalNutritions() {
+        return ApiResponse.<Long>builder()
+                .result(nutritionService.totalNutritions())
+                .build();
+    }
 }

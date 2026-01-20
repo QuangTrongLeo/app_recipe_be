@@ -84,6 +84,11 @@ public class NutritionService {
         }
     }
 
+    // ===== TỔNG SỐ THÀNH PHẦN DINH DƯỠNG =====
+    public Long totalNutritions() {
+        return nutritionRepository.count();
+    }
+
     // ===== Lấy Nutrition bằng ID =====
     public Nutrition getById(String id){
         return nutritionRepository.findById(id)
