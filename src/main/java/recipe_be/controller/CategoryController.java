@@ -35,10 +35,10 @@ public class CategoryController {
 
     @PreAuthorize("hasAuthority('ADMIN')")
     @DeleteMapping("/{id}")
-    public ApiResponse<String> deleteCategory(@PathVariable String id) {
+    public ApiResponse<Boolean> deleteCategory(@PathVariable String id) {
         categoryService.deleteCategory(id);
-        return ApiResponse.<String>builder()
-                .result("Success")
+        return ApiResponse.<Boolean>builder()
+                .result(true)
                 .build();
     }
 
